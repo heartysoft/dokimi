@@ -13,5 +13,8 @@
     <tags>Specifications, Testing, dokimi, NUnit</tags>
     <dependencies>
     </dependencies>
+    <files>
+        <file src="bin\Debug\*.dll" target="lib" />
+    </files>
   </metadata>
 </package>
