@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dokimi.core", "dokimi.core\dokimi.core.csproj", "{269BC043-EA53-4974-9555-3661ED23D492}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dokimi.nunit", "dokimi.nunit\dokimi.nunit.csproj", "{527A576C-0DCB-455B-A3B7-9F9BF7DF4452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{269BC043-EA53-4974-9555-3661ED23D492}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{269BC043-EA53-4974-9555-3661ED23D492}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{269BC043-EA53-4974-9555-3661ED23D492}.Release|Any CPU.Build.0 = Release|Any CPU
+		{527A576C-0DCB-455B-A3B7-9F9BF7DF4452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{527A576C-0DCB-455B-A3B7-9F9BF7DF4452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{527A576C-0DCB-455B-A3B7-9F9BF7DF4452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{527A576C-0DCB-455B-A3B7-9F9BF7DF4452}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
