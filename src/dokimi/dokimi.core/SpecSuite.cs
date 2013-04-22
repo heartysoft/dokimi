@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace dokimi.core
 {
+    [Serializable]
     public class SpecSuite
     {
         public SpecCategory[] Categories { get { return _categories.ToArray(); } }
@@ -21,6 +22,7 @@ namespace dokimi.core
         }
     }
 
+    [Serializable]
     public class SpecCategory
     {
         public SpecificationCategory Name { get; private set; }

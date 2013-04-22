@@ -24,6 +24,17 @@ namespace dokimi
     {
         static void Main(string[] args)
         {
+            new Program().Run();
+        }
+
+        private void Run()
+        {
+            var runner = new SpecRunner();
+            runner.DescribeAssembly("fii");
+
+            Console.WriteLine("Main: {0}", AppDomain.CurrentDomain.FriendlyName);
+
+            Console.ReadLine();
         }
     }
 }
