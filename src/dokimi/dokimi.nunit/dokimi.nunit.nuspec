@@ -13,8 +13,9 @@
     <tags>Specifications, Testing, dokimi, NUnit</tags>
     <dependencies>
     </dependencies>
-    <files>
-        <file src="bin\Debug\*.dll" target="lib" />
-    </files>
   </metadata>
+  <files>
+    <file src="bin\$configuration$\*.dll" target="lib" />
+    <file src="bin\$configuration$\*.pdb" target="lib" />
+  </files>
 </package>
