@@ -15,7 +15,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\$configuration$\*.dll" target="lib" />
-    <file src="bin\$configuration$\*.pdb" target="lib" />
+    <file src=".\bin\$configuration$\*.dll" target="lib" />
+    <file src=".\bin\$configuration$\*.pdb" target="lib" />
   </files>
 </package>
