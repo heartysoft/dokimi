@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SimpleConfig;
+using dokimi.Config;
 
 namespace dokimi
 {
@@ -24,6 +26,19 @@ namespace dokimi
     {
         static void Main(string[] args)
         {
+            new Program().Run();
+        }
+
+        private void Run()
+        {
+            var config = Configuration.Load<DokimiConfig>();
+
+            var runner = new SpecRunner();
+            runner.DescribeAssembly(config);
+
+            //Console.WriteLine("Main: {0}", AppDomain.CurrentDomain.FriendlyName);
+
+            Console.ReadLine();
         }
     }
 }
