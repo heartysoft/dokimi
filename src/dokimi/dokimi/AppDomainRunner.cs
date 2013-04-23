@@ -1,45 +1,107 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
-using SimpleConfig;
+using dokimi.Config;
 using dokimi.core;
 
 namespace dokimi
 {
+    public class RunnerHelper
+    {
+        public const string AssemblyFilesPattern = "*.exe,*.dll";
+
+        public static string[] GetFileList(string path)
+        {
+            return Directory
+                .GetFiles(path, "*.*", SearchOption.AllDirectories)
+                .Where(s => RunnerHelper.AssemblyFilesPattern.Contains(Path.GetExtension(s).ToLower()))
+                .ToArray();
+        }
+    }
+
+    public class SpecRunner
+    {
+        public void DescribeAssembly(DokimiConfig config)
+        {
+            var files = RunnerHelper.GetFileList(config.Source.IncludePath);
+
+            foreach (var file in files)
+            {
+                var appDomain = AppDomain.CreateDomain(file, AppDomain.CurrentDomain.Evidence);
+                var runner = (AppDomainRunner)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, (typeof (AppDomainRunner)).FullName);
+
+                var command = new RunSpecCommand(file, config.Formatters.IncludePath);
+
+                var res = runner.DescribeSpec(command);
+            }
+        }
+    }
+
     public class AppDomainRunner : MarshalByRefObject
     {
-        public string DescribeSpec(string path)
+        public string DescribeSpec(RunSpecCommand command)
         {
-            Console.WriteLine(path);
-            Console.WriteLine("Runner: {0}", AppDomain.CurrentDomain.FriendlyName);
-            //Assembly.Load() -> this will load into this app domain, not parent app domain.
+            var formatters = ExtractMessageFormatters(command.FormattersPath);
 
-            const string file = @"C:\UnoGit\CodeTF\Twang\Solutions\Twang\UnitTests\bin\Debug\UnitTests.dll";
-            var assembly = Assembly.LoadFrom(file);
-            var specExtractor = new SpecExtractor().RegisterFormatter(new SpecificationCategory("Accounts", "Overdrafts"), new DefaultFormatter());
+            var assembly = Assembly.LoadFrom(command.AssemblyPath);
+            var specExtractor = new SpecExtractor();
+
+            RegisterFormatters(formatters, specExtractor);
+            
+            //.RegisterFormatter(new SpecificationCategory("Accounts", "Overdrafts"), new DefaultFormatter());
             //var specs = specExtractor.ExtractSuite(assembly);
+            
             var specs = specExtractor.RunSuite(assembly);
 
             var printer = new SpecSuiteConsolePrinter();
 
             printer.Print(specs);
 
-
             return DateTime.Now.ToString();
         }
-    }
 
-    public class SpecRunner
-    {
-        public void DescribeAssembly(string path)
+        private static IList<MessageFormatter> ExtractMessageFormatters(string path)
         {
-            var appDomain = AppDomain.CreateDomain(path, AppDomain.CurrentDomain.Evidence);
-            var runner = (AppDomainRunner)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, (typeof (AppDomainRunner)).FullName);
-            var res = runner.DescribeSpec(path);
+            var extractedFormatters = new List<MessageFormatter>();
+            var formatterFiles = RunnerHelper.GetFileList(path);
 
-            Console.WriteLine("Res: {0}", res);
+            foreach (var file in formatterFiles)
+            {
+                var assembly = Assembly.LoadFrom(file);
+                var messageFormatterTypes = assembly.GetTypes()
+                                                    .Where(x => typeof (MessageFormatter).IsAssignableFrom(x) && !x.IsAbstract)
+                                                    .ToArray();
+
+                extractedFormatters.AddRange(messageFormatterTypes.Select(Activator.CreateInstance)
+                                                                  .Select(x => x)
+                                                                  .Cast<MessageFormatter>());
+            }
+
+            return extractedFormatters;
+        }
+
+        private static void RegisterFormatters(IList<MessageFormatter> formatters, SpecExtractor specExtractor)
+        {
+            foreach (var formatter in formatters)
+            {
+                specExtractor.RegisterFormatter(new SpecificationCategory("test", "test"), formatter);
+            }
         }
     }
 
+    [Serializable]
+    public class RunSpecCommand
+    {
+        public string AssemblyPath { get; private set; }
+        public string FormattersPath { get; private set; }
 
+        public RunSpecCommand(string assemblyPath, string formattersPath)
+        {
+            AssemblyPath = assemblyPath;
+            FormattersPath = formattersPath;
+        }
+    }
 }

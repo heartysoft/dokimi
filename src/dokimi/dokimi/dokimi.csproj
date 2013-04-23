@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDomainRunner.cs" />
+    <Compile Include="Config\DokimiConfig.cs" />
+    <Compile Include="Config\FormattersInfo.cs" />
+    <Compile Include="Config\PrintFormatInfo.cs" />
+    <Compile Include="Config\PrintInfo.cs" />
+    <Compile Include="Config\PrintLevelInfo.cs" />
+    <Compile Include="Config\SourceInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
