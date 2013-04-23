@@ -78,7 +78,6 @@ namespace dokimi.core.Printers
                                     .FontSize(12);
 
                     p.IndentationBefore = 0.5f;
-                    p.StyleName = "List Paragraph";
                 }
 
 
@@ -86,9 +85,9 @@ namespace dokimi.core.Printers
                 {
                     document.InsertParagraph()
                             .Append(spec.Exception.ToString())
-                            .Color(Color.Red)
+                            .Color(Color.Black)
                             .FontSize(12)
-                            .IndentationBefore = 12;
+                            .IndentationBefore = 0.5f;
                 }
             }
 
@@ -107,7 +106,7 @@ namespace dokimi.core.Printers
                         .Color(spec.HasExecuted ? (spec.When.Passed ? Color.Green : Color.Red) : Color.Black)
                         .FontSize(12);
 
-                if (!spec.When.Passed && spec.Exception != null)
+                if (shouldDisplayWhenException(spec))
                 {
                     p.AppendLine(spec.Exception.ToString());
                     p.AppendLine(spec.Exception.StackTrace);
@@ -115,6 +114,12 @@ namespace dokimi.core.Printers
 
                 p.IndentationBefore = 0.5f;
 
+            }
+
+            private static bool shouldDisplayWhenException(SpecInfo spec)
+            {
+                return !spec.When.Passed && spec.Exception != null
+                    && spec.Givens.All(x =>x.Passed);
             }
 
             private static void printThen(DocX document, SpecInfo spec)
@@ -130,6 +135,7 @@ namespace dokimi.core.Printers
                 {
                     var description = spec.HasExecuted
                                           ? string.Format("{0} [{1}]", then.Description, then.Passed ? "Passed" : "Failed")
+
                                           : then.Description;
                     var p = document.InsertParagraph()
                             .Append(description)

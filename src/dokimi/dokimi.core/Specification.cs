@@ -41,13 +41,24 @@ namespace dokimi.core
 
         public SpecInfo Run(SpecInfo results, MessageFormatter formatter)
         {
-            var onGiven = OnGiven(Given, results, formatter);
+            Func<TWhen, TWhenResult> onGiven;
+            try
+            {
+                onGiven = OnGiven(Given, results, formatter);
+            }
+            catch (Exception e)
+            {
+                results.Exception = e;
+                When.DescribeTo(results, formatter);
+                Then.DescribeTo(results, formatter);
+                return results;
+            }
+
             When.DescribeTo(results, formatter);
             
             try
             {
                 var whenResult = onGiven(When);
-                results.When.Pass();
                 var tthen = OnWhen(whenResult);
                 tthen.Verify(Then, results, formatter);
             }

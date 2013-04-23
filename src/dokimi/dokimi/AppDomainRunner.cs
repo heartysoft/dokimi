@@ -50,8 +50,9 @@ namespace dokimi
             var specExtractor = new SpecExtractor();
 
             RegisterFormatters(formatters, specExtractor, command);
-            
-            var specs = specExtractor.ExtractSuite(assembly);
+
+            //var specs = specExtractor.ExtractSuite(assembly);
+            var specs = specExtractor.RunSuite(assembly);
             var assemblyName = Path.GetFileNameWithoutExtension(command.AssemblyPath);
             
             var printer = new RunSpecCommandPrinterEvaluator().GetCommandPrinter(command.PrintInfo.Format, command.PrintInfo.Destination, assemblyName);
