@@ -35,14 +35,14 @@ namespace dokimi
 
                 var command = new RunSpecCommand(file, config.Formatters.IncludePath, config.Formatters.Formatters);
 
-                var res = runner.DescribeSpec(command);
+                runner.DescribeSpec(command);
             }
         }
     }
 
     public class AppDomainRunner : MarshalByRefObject
     {
-        public string DescribeSpec(RunSpecCommand command)
+        public void DescribeSpec(RunSpecCommand command)
         {
             var formatters = ExtractMessageFormatters(command.FormattersPath);
 
@@ -51,19 +51,14 @@ namespace dokimi
 
             RegisterFormatters(formatters, specExtractor, command);
             
-            //.RegisterFormatter(new SpecificationCategory("Accounts", "Overdrafts"), new DefaultFormatter());
-            //var specs = specExtractor.ExtractSuite(assembly);
-            
-            var specs = specExtractor.RunSuite(assembly);
+            var specs = specExtractor.ExtractSuite(assembly);
 
             var printer = new SpecSuiteConsolePrinter();
 
             printer.Print(specs);
-
-            return DateTime.Now.ToString();
         }
 
-        private static IList<MessageFormatter> ExtractMessageFormatters(string path)
+        private static IEnumerable<MessageFormatter> ExtractMessageFormatters(string path)
         {
             var extractedFormatters = new List<MessageFormatter>();
             var formatterFiles = RunnerHelper.GetFileList(path);

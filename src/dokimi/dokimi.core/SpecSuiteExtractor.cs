@@ -121,8 +121,4 @@ namespace dokimi.core
             public MethodInfo MethodInfo { get; private set; }
         }
     }
-
-    public interface SpecificationTest
-    {
-    }
 }

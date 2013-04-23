@@ -49,6 +49,7 @@
     <Compile Include="ExpectationInfo.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="SpecificationCategory.cs" />
+    <Compile Include="SpecificationTest.cs" />
     <Compile Include="SpecInfo.cs" />
     <Compile Include="SpecSuite.cs" />
     <Compile Include="SpecSuiteExtractor.cs" />
