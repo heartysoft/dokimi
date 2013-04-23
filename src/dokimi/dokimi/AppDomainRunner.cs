@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using dokimi.Config;
 using dokimi.core;
+using dokimi.core.Attributes;
 
 namespace dokimi
 {
     public class RunnerHelper
     {
-        public const string AssemblyFilesPattern = "*.exe,*.dll";
+        private const string AssemblyFilesPattern = "*.exe,*.dll";
 
         public static string[] GetFileList(string path)
         {
             return Directory
                 .GetFiles(path, "*.*", SearchOption.AllDirectories)
-                .Where(s => RunnerHelper.AssemblyFilesPattern.Contains(Path.GetExtension(s).ToLower()))
+                .Where(s => AssemblyFilesPattern.Contains(Path.GetExtension(s).ToLower()))
                 .ToArray();
         }
     }
@@ -33,7 +33,7 @@ namespace dokimi
                 var appDomain = AppDomain.CreateDomain(file, AppDomain.CurrentDomain.Evidence);
                 var runner = (AppDomainRunner)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, (typeof (AppDomainRunner)).FullName);
 
-                var command = new RunSpecCommand(file, config.Formatters.IncludePath);
+                var command = new RunSpecCommand(file, config.Formatters.IncludePath, config.Formatters.Formatters);
 
                 var res = runner.DescribeSpec(command);
             }
@@ -49,7 +49,7 @@ namespace dokimi
             var assembly = Assembly.LoadFrom(command.AssemblyPath);
             var specExtractor = new SpecExtractor();
 
-            RegisterFormatters(formatters, specExtractor);
+            RegisterFormatters(formatters, specExtractor, command);
             
             //.RegisterFormatter(new SpecificationCategory("Accounts", "Overdrafts"), new DefaultFormatter());
             //var specs = specExtractor.ExtractSuite(assembly);
@@ -72,7 +72,9 @@ namespace dokimi
             {
                 var assembly = Assembly.LoadFrom(file);
                 var messageFormatterTypes = assembly.GetTypes()
-                                                    .Where(x => typeof (MessageFormatter).IsAssignableFrom(x) && !x.IsAbstract)
+                                                    .Where(x => typeof (MessageFormatter).IsAssignableFrom(x) 
+                                                        && !x.IsAbstract
+                                                        && x.GetCustomAttribute<MessageFormatterTypeKeyAttribute>() != null)
                                                     .ToArray();
 
                 extractedFormatters.AddRange(messageFormatterTypes.Select(Activator.CreateInstance)
@@ -83,11 +85,30 @@ namespace dokimi
             return extractedFormatters;
         }
 
-        private static void RegisterFormatters(IList<MessageFormatter> formatters, SpecExtractor specExtractor)
+        private static void RegisterFormatters(IEnumerable<MessageFormatter> formatters, SpecExtractor specExtractor, RunSpecCommand command)
         {
-            foreach (var formatter in formatters)
+            var requiredFormatters = formatters
+                .Select(
+                    x =>
+                    new {Attribute = x.GetType().GetCustomAttribute<MessageFormatterTypeKeyAttribute>(), Formatter = x})
+                .Where(x => x.Attribute != null)
+                .Where(x => command.Formatters.Any(y => y.Type == x.Attribute.Type))
+                .Select(x => new
+                    {
+                        x.Formatter,
+                        Categories =
+                                 command.Formatters.Where(y => y.Type == x.Attribute.Type)
+                                        .Select(y => new SpecificationCategory(y.ContextName, y.CategoryName))
+                                        .ToArray()
+                    })
+                .ToArray();
+
+            foreach (var entry in requiredFormatters)
             {
-                specExtractor.RegisterFormatter(new SpecificationCategory("test", "test"), formatter);
+                foreach (var category in entry.Categories)
+                {
+                    specExtractor.RegisterFormatter(category, entry.Formatter);
+                }
             }
         }
     }
@@ -97,11 +118,15 @@ namespace dokimi
     {
         public string AssemblyPath { get; private set; }
         public string FormattersPath { get; private set; }
+        public FormatterInfo[] Formatters { get; private set; }
 
-        public RunSpecCommand(string assemblyPath, string formattersPath)
+        public RunSpecCommand(string assemblyPath, string formattersPath, IEnumerable<FormatterInfo> formatters)
         {
             AssemblyPath = assemblyPath;
             FormattersPath = formattersPath;
+            Formatters = formatters.ToArray();
         }
     }
+
+    
 }
