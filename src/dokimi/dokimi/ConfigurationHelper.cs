@@ -15,15 +15,28 @@ namespace dokimi
 
         public static void VerifyAndSetDefaultsIfNeeded(DokimiConfig config)
         {
-            VerifyAndCreateSourceDestination(config);
-
             if (config.Print == null)
                 config.Print = new PrintInfo { Format = DEFAULT_PRINT_FORMAT, Level = DEFAULT_PRINT_LEVEL };
-
+            
+            VerifyAndCreateSourceDestination(config);
             VerifyAndCreatePrintDestination(config);
+            VerifyAndCreateFormattersDestination(config);
+        }
 
+        private static void VerifyAndCreateFormattersDestination(DokimiConfig config)
+        {
             if (config.Formatters == null)
-                config.Formatters = new FormattersInfo { IncludePath = DEFAULT_FORMATTERS_PATH };
+            {
+                config.Formatters = new FormattersInfo() { Formatters = new FormatterInfo[0] };
+            }
+
+            if (String.IsNullOrEmpty(config.Formatters.IncludePath))
+            {
+                config.Formatters.IncludePath = Path.Combine(GetAppCurrentDirectory(), DEFAULT_FORMATTERS_PATH);
+
+                if (!Directory.Exists(config.Formatters.IncludePath))
+                    Directory.CreateDirectory(config.Formatters.IncludePath);
+            }
         }
 
         private static void VerifyAndCreateSourceDestination(DokimiConfig config)

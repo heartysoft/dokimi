@@ -57,12 +57,12 @@ namespace dokimi
 
             parser = new OptionSet
                 {
-                    {"sp=|sourcePath=", "Source path for the test libraries.", value => config.Source.IncludePath = value},
+                    {"sp=|sourcePath=", "Source path for the test libraries. Default is /src.", value => config.Source.IncludePath = value},
                     {
                         "pl=|printLevel=", "Print level (Minimal|Verbose). Default is Minimal.", pl =>
                             {
                                 PrintLevelInfo printLevel;
-                                if (Enum.TryParse(pl, out printLevel))
+                                if (Enum.TryParse(pl, true, out printLevel))
                                     config.Print.Level = printLevel;
                             }
                     },
@@ -70,11 +70,11 @@ namespace dokimi
                         "pf=|printFormat=", "Print format (Console|Word). Default is Console.", pf =>
                             {
                                 PrintFormatInfo printFormat;
-                                if (Enum.TryParse(pf, out printFormat))
+                                if (Enum.TryParse(pf, true, out printFormat))
                                     config.Print.Format = printFormat;
                             }
                     },
-                    {"pd=|printDestination", @"Print destination file path in (Word). Default \out.", pd => config.Print.Destination = pd },
+                    {"pd=|printDestination", @"Print destination file path in (Word). Default is \out.", pd => config.Print.Destination = pd },
                     {
                         "fp=|formattersPath=", @"Source path for the test message formatters. (if not provided, config is used. If not present in config, \formatters is used.",
                         path => config.Formatters.IncludePath = path
