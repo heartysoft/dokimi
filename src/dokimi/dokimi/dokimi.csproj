@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="AppDomainRunner.cs" />
     <Compile Include="ConfigurationHelper.cs" />
+    <Compile Include="Config\ActionInfo.cs" />
     <Compile Include="Config\DokimiConfig.cs" />
     <Compile Include="Config\FormatterInfo.cs" />
     <Compile Include="Config\FormattersInfo.cs" />

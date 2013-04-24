@@ -11,14 +11,15 @@ namespace dokimi
         public string AssemblyPath { get; private set; }
         public string FormattersPath { get; private set; }
         public FormatterInfo[] Formatters { get; private set; }
-
         public PrintInfo PrintInfo { get; private set; }
-        
-        public RunSpecCommand(string assemblyPath, string formattersPath, IEnumerable<FormatterInfo> formatters, PrintInfo printInfo)
+        public ActionInfo Action { get; private set; }
+
+        public RunSpecCommand(string assemblyPath, string formattersPath, IEnumerable<FormatterInfo> formatters, PrintInfo printInfo, ActionInfo action)
         {
             AssemblyPath = assemblyPath;
             FormattersPath = formattersPath;
             PrintInfo = printInfo;
+            Action = action;
             Formatters = formatters.ToArray();
         }
     }

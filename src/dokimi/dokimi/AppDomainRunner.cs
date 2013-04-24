@@ -33,7 +33,7 @@ namespace dokimi
                 var appDomain = AppDomain.CreateDomain(file, AppDomain.CurrentDomain.Evidence);
                 var runner = (AppDomainRunner)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, (typeof (AppDomainRunner)).FullName);
 
-                var command = new RunSpecCommand(file, config.Formatters.IncludePath, config.Formatters.Formatters, config.Print);
+                var command = new RunSpecCommand(file, config.Formatters.IncludePath, config.Formatters.Formatters, config.Print, config.Action);
 
                 runner.DescribeSpec(command);
             }
@@ -51,8 +51,8 @@ namespace dokimi
 
             RegisterFormatters(formatters, specExtractor, command);
 
-            //var specs = specExtractor.ExtractSuite(assembly);
-            var specs = specExtractor.RunSuite(assembly);
+            var specs = command.Action == ActionInfo.Describe ? specExtractor.ExtractSuite(assembly) : specExtractor.RunSuite(assembly);
+            
             var assemblyName = Path.GetFileNameWithoutExtension(command.AssemblyPath);
             
             var printer = new RunSpecCommandPrinterEvaluator().GetCommandPrinter(command.PrintInfo.Format, command.PrintInfo.Destination, assemblyName);
