@@ -2,6 +2,7 @@
 {
     public enum PrintFormatInfo
     {
+        Console,
         Word
     }
 }

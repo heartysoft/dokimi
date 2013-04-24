@@ -2,7 +2,7 @@
 {
     public enum PrintLevelInfo
     {
-        Verbose = 0,
-        Minimal = 1
+        Minimal,
+        Verbose
     }
 }

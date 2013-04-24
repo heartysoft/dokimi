@@ -15,13 +15,10 @@ namespace dokimi.core
             var sb = new StringBuilder();
             sb.AppendFormat("Expected {0}", expectation);
             sb.AppendLine();
-            sb.AppendFormat("but the following {0} messages were generated: ", generatedEvents.Length);
+            sb.AppendFormat("but the following {0} result(s) were found: ", generatedEvents.Length);
             sb.AppendLine();
-
-            foreach (var e in generatedEvents)
-            {
-                sb.AppendLine(e.ToString());
-            }
+            
+            sb.Append(string.Join(Environment.NewLine, generatedEvents));
 
             return sb.ToString();
         }

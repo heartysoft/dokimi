@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5E37B6
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dokimi.examples.sut", "dokimi.examples.sut\dokimi.examples.sut.csproj", "{F985EDB9-077B-46CD-949C-1380864959AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{7A61F364-D696-4869-BB69-A1605CC4DDFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A61F364-D696-4869-BB69-A1605CC4DDFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A61F364-D696-4869-BB69-A1605CC4DDFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F985EDB9-077B-46CD-949C-1380864959AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F985EDB9-077B-46CD-949C-1380864959AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F985EDB9-077B-46CD-949C-1380864959AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F985EDB9-077B-46CD-949C-1380864959AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

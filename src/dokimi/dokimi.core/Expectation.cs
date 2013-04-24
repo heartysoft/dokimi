@@ -13,10 +13,17 @@ namespace dokimi.core
     public class Expectation<T> : Expectation
     {
         public readonly Expression<Func<T, bool>> Expect;
+        private readonly string _description;
 
-        public Expectation(Expression<Func<T, bool>> expect)
+        public Expectation(Expression<Func<T, bool>> expect, string description)
         {
             Expect = expect;
+            _description = description;
+        }
+
+        public Expectation(Expression<Func<T, bool>> expect)
+            :this(expect, null)
+        {
         }
 
         public void Verify(object[] input)
@@ -32,6 +39,9 @@ namespace dokimi.core
 
         public virtual string GetPrettyPrintPrefix()
         {
+            if (typeof (T).IsValueType)
+                return string.Empty;
+
             var name = typeof(T).Name.Replace("Event", string.Empty)
                 .Replace("Command", string.Empty);
             
@@ -41,8 +51,16 @@ namespace dokimi.core
 
         public override string ToString()
         {
+            if (string.IsNullOrWhiteSpace(_description) == false)
+                return _description;
+
+            var prefix = GetPrettyPrintPrefix();
+
+            if (string.IsNullOrWhiteSpace(prefix))
+                return GetPrettyPrintSuffix();
+
             var sb = new StringBuilder();
-            sb.AppendFormat("{0} with ", GetPrettyPrintPrefix());
+            sb.AppendFormat("{0} with ", prefix);
             sb.Append(GetPrettyPrintSuffix());
 
             return sb.ToString();
@@ -55,9 +73,18 @@ namespace dokimi.core
             {
                 var binary = Expect.Body as BinaryExpression;
                 var access = binary.Left as MemberExpression;
-                sb.Append(access.Member.Name);
-                sb.Append(" = ");
-                appendRight(binary.Right, sb);
+
+                if (access != null)
+                {
+                    sb.Append(access.Member.Name);
+                    sb.Append(" = ");
+                    appendRight(binary.Right, sb);
+                }
+                else
+                {
+
+                    sb.Append(Expect.Body);
+                }
             }
             else
             {
