@@ -33,7 +33,7 @@ namespace dokimi
                 var appDomain = AppDomain.CreateDomain(file, AppDomain.CurrentDomain.Evidence);
                 var runner = (AppDomainRunner)appDomain.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, (typeof (AppDomainRunner)).FullName);
 
-                var command = new RunSpecCommand(file, config.Formatters.IncludePath, config.Formatters.Formatters);
+                var command = new RunSpecCommand(file, config.Formatters.IncludePath, config.Formatters.Formatters, config.Print);
 
                 runner.DescribeSpec(command);
             }
@@ -52,29 +52,33 @@ namespace dokimi
             RegisterFormatters(formatters, specExtractor, command);
             
             var specs = specExtractor.ExtractSuite(assembly);
-
-            var printer = new SpecSuiteConsolePrinter();
-
+            var assemblyName = Path.GetFileNameWithoutExtension(command.AssemblyPath);
+            
+            var printer = new RunSpecCommandPrinterEvaluator().GetCommandPrinter(command.PrintInfo.Format, command.PrintInfo.Destination, assemblyName);
             printer.Print(specs);
         }
-
+        
         private static IEnumerable<MessageFormatter> ExtractMessageFormatters(string path)
         {
             var extractedFormatters = new List<MessageFormatter>();
-            var formatterFiles = RunnerHelper.GetFileList(path);
 
-            foreach (var file in formatterFiles)
+            if (Directory.Exists(path))
             {
-                var assembly = Assembly.LoadFrom(file);
-                var messageFormatterTypes = assembly.GetTypes()
-                                                    .Where(x => typeof (MessageFormatter).IsAssignableFrom(x) 
-                                                        && !x.IsAbstract
-                                                        && x.GetCustomAttribute<MessageFormatterTypeKeyAttribute>() != null)
-                                                    .ToArray();
+                var formatterFiles = RunnerHelper.GetFileList(path);
 
-                extractedFormatters.AddRange(messageFormatterTypes.Select(Activator.CreateInstance)
-                                                                  .Select(x => x)
-                                                                  .Cast<MessageFormatter>());
+                foreach (var file in formatterFiles)
+                {
+                    var assembly = Assembly.LoadFrom(file);
+                    var messageFormatterTypes = assembly.GetTypes()
+                                                        .Where(x => typeof (MessageFormatter).IsAssignableFrom(x) 
+                                                                    && !x.IsAbstract
+                                                                    && x.GetCustomAttribute<MessageFormatterTypeKeyAttribute>() != null)
+                                                        .ToArray();
+
+                    extractedFormatters.AddRange(messageFormatterTypes.Select(Activator.CreateInstance)
+                                                                      .Select(x => x)
+                                                                      .Cast<MessageFormatter>());
+                }
             }
 
             return extractedFormatters;
@@ -107,21 +111,4 @@ namespace dokimi
             }
         }
     }
-
-    [Serializable]
-    public class RunSpecCommand
-    {
-        public string AssemblyPath { get; private set; }
-        public string FormattersPath { get; private set; }
-        public FormatterInfo[] Formatters { get; private set; }
-
-        public RunSpecCommand(string assemblyPath, string formattersPath, IEnumerable<FormatterInfo> formatters)
-        {
-            AssemblyPath = assemblyPath;
-            FormattersPath = formattersPath;
-            Formatters = formatters.ToArray();
-        }
-    }
-
-    
 }

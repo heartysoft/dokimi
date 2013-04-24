@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NDesk.Options;
 using SimpleConfig;
 using dokimi.Config;
@@ -29,14 +30,36 @@ namespace dokimi
         private void Run(string[] args)
         {
             var config = Configuration.Load<DokimiConfig>();
+            ConfigurationHelper.VerifyAndSetDefaultsIfNeeded(config);
 
-            bool show_help = false;
+            OptionSet parser;
+            if (!ParseCommandParams(args, config, out parser))
+            {
+                ShowHelp(parser);
+                return;
+            }
 
-            var parser = new OptionSet
+            try
+            {
+                var runner = new SpecRunner();
+                runner.DescribeAssembly(config);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("There is a problem with the execution:");
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private static bool ParseCommandParams(IEnumerable<string> args, DokimiConfig config, out OptionSet parser)
+        {
+            var success = true;
+
+            parser = new OptionSet
                 {
-                    {"sp=|sourcePath=", "Source path for the test libraries.", value => config.Source.IncludePath = value },
+                    {"sp=|sourcePath=", "Source path for the test libraries.", value => config.Source.IncludePath = value},
                     {
-                        "pl=|printLevel=", "Print level (Minimal|Verbose).", pl =>
+                        "pl=|printLevel=", "Print level (Minimal|Verbose). Default is Minimal.", pl =>
                             {
                                 PrintLevelInfo printLevel;
                                 if (Enum.TryParse(pl, out printLevel))
@@ -44,18 +67,19 @@ namespace dokimi
                             }
                     },
                     {
-                        "pf=|printFormat=", "Print format (Console|Word).", pl =>
+                        "pf=|printFormat=", "Print format (Console|Word). Default is Console.", pf =>
                             {
                                 PrintFormatInfo printFormat;
-                                if (Enum.TryParse(pl, out printFormat))
+                                if (Enum.TryParse(pf, out printFormat))
                                     config.Print.Format = printFormat;
                             }
                     },
+                    {"pd=|printDestination", @"Print destination file path in (Word). Default \out.", pd => config.Print.Destination = pd },
                     {
-                        "fp=|formattersPath=", "Source path for the test message formatters.",
+                        "fp=|formattersPath=", @"Source path for the test message formatters. (if not provided, config is used. If not present in config, \formatters is used.",
                         path => config.Formatters.IncludePath = path
                     },
-                    { "h|?|help", v => show_help = v != null },
+                    {"h|?|help", v => success = v == null},
                 };
 
             try
@@ -67,25 +91,15 @@ namespace dokimi
                 Console.Write("dokimi: ");
                 Console.WriteLine(optionException.Message);
                 Console.WriteLine("Try `dokimi --help' for more information.");
-                return;
+                success = false;
             }
 
-            if (show_help)
-            {
-                ShowHelp(parser);
-                return;
-            }
-
-            var runner = new SpecRunner();
-            runner.DescribeAssembly(config);
-
-            Console.ReadLine();
+            return success;
         }
 
         private static void ShowHelp(OptionSet parser)
         {
-            Console.WriteLine("Usage: dokimi [OPTIONS]");
-            Console.WriteLine("Default configuration is used for the specific [OPTIONS] if not provided.");
+            Console.WriteLine("Usage: dokimi.exe  [--sp=Source Path] [--pl=Print Level] [--pf=Print Format] [--fp=Formatters Path].");
             Console.WriteLine("Options:");
             parser.WriteOptionDescriptions(Console.Out);
         }
