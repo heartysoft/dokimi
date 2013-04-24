@@ -37,6 +37,9 @@
     <Reference Include="Bender">
       <HintPath>..\packages\Bender.1.0.28.0\lib\Bender.dll</HintPath>
     </Reference>
+    <Reference Include="NDesk.Options">
+      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+    </Reference>
     <Reference Include="SimpleConfig">
       <HintPath>..\packages\SimpleConfig.1.0.21.0\lib\SimpleConfig.dll</HintPath>
     </Reference>
