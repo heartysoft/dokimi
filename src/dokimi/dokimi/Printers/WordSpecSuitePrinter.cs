@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
 using Novacode;
 using System.Linq;
+using dokimi.core;
 
-namespace dokimi.core.Printers
+namespace dokimi.Printers
 {
     namespace ConsoleApplication1
     {
