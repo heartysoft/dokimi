@@ -1,4 +1,6 @@
-﻿namespace dokimi.Config
+﻿using System.Xml.Serialization;
+
+namespace dokimi.Config
 {
     public enum ActionInfo
     {
