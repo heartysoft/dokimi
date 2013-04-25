@@ -77,7 +77,7 @@ namespace dokimi.core.Specs
         {
             var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_given) : _description;
             
-            spec.Givens = new[]{new StepInfo(description)};
+            spec.ReportGivenStep(new StepInfo(description));
         }
 
         public TSut GetSut(SpecInfo info, MessageFormatter formatter)
@@ -105,7 +105,7 @@ namespace dokimi.core.Specs
         {
             var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_when) : _description;
 
-            spec.When = new StepInfo(description);
+            spec.ReportWhenStep(new StepInfo(description));
         }
 
         public TResult GetResult(TSut sut, SpecInfo spec, MessageFormatter formatter)

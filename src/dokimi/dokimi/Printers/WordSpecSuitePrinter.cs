@@ -68,14 +68,14 @@ namespace dokimi.Printers
 
                 foreach (var given in spec.Givens)
                 {
-                    var description = spec.HasExecuted
+                    var description = spec.HasExecutionBeenTriggered
                                           ? string.Format("{0} [{1}]", given.Description,
                                                           given.Passed ? "Passed" : "Failed")
                                           : given.Description;
 
                     var p = document.InsertParagraph()
                                     .Append(description)
-                                    .Color(spec.HasExecuted ? (given.Passed ? Color.Green : Color.Red) : Color.Black)
+                                    .Color(spec.HasExecutionBeenTriggered ? (given.Passed ? Color.Green : Color.Red) : Color.Black)
                                     .FontSize(12);
 
                     p.IndentationBefore = 0.5f;
@@ -103,8 +103,8 @@ namespace dokimi.Printers
 
 
                 var p = document.InsertParagraph()
-                    .Append(spec.HasExecuted ? string.Format("{0} [{1}]", spec.When.Description, spec.When.Passed ? "Passed" : "Failed") : spec.When.Description)
-                        .Color(spec.HasExecuted ? (spec.When.Passed ? Color.Green : Color.Red) : Color.Black)
+                    .Append(spec.HasExecutionBeenTriggered ? string.Format("{0} [{1}]", spec.When.Description, spec.When.Passed ? "Passed" : "Failed") : spec.When.Description)
+                        .Color(spec.HasExecutionBeenTriggered ? (spec.When.Passed ? Color.Green : Color.Red) : Color.Black)
                         .FontSize(12);
 
                 if (shouldDisplayWhenException(spec))
@@ -134,14 +134,14 @@ namespace dokimi.Printers
 
                 foreach (var then in spec.Thens)
                 {
-                    var description = spec.HasExecuted
+                    var description = spec.HasExecutionBeenTriggered
                                           ? string.Format("{0} [{1}]", then.Description, then.Passed ? "Passed" : "Failed")
 
                                           : then.Description;
                     var p = document.InsertParagraph()
                             .Append(description)
                             .FontSize(12)
-                            .Color(spec.HasExecuted ? (then.Passed ? Color.Green : Color.Red) : Color.Black);
+                            .Color(spec.HasExecutionBeenTriggered ? (then.Passed ? Color.Green : Color.Red) : Color.Black);
 
                     if (!then.Passed && then.Exception != null)
                         p.AppendLine(then.Exception.ToString());

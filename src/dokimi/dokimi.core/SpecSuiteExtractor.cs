@@ -65,7 +65,7 @@ namespace dokimi.core
         private SpecInfo getRunInfo(SpecificationMethodInfo spec)
         {
             var specInfo = new SpecInfo();
-            specInfo.HasExecuted = true;
+            specInfo.ReportSpecExecutionHasTriggered();
             specInfo.Name = getSpecName(spec.MethodInfo.DeclaringType, spec.MethodInfo);
 
             try
