@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using dokimi.core;
 
-namespace dokimi.core
+namespace dokimi
 {
     public class SpecExtractor
     {

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using dokimi.core;
 
-namespace dokimi.core
+namespace dokimi
 {
     [Serializable]
     public class SpecSuite

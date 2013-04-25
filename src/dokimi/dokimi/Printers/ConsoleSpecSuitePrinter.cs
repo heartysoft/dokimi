@@ -1,6 +1,7 @@
 using System;
+using dokimi.core;
 
-namespace dokimi.core.Printers
+namespace dokimi.Printers
 {
     public class ConsoleSpecSuitePrinter : ISpecSuitePrinter
     {

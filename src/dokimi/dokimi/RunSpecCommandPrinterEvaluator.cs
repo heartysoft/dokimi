@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using dokimi.Config;
+using dokimi.Printers;
 using dokimi.Printers.ConsoleApplication1;
 using dokimi.core;
-using dokimi.core.Printers;
 
 namespace dokimi
 {

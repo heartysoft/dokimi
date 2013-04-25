@@ -6,6 +6,6 @@ namespace dokimi.core
     {
         SpecificationCategory Category { get; }
         void EnrichDescription(SpecInfo spec, MessageFormatter formatter);
-        SpecInfo Run(SpecInfo results, MessageFormatter formatter);
+        SpecInfo Run(SpecInfo spec, MessageFormatter formatter);
     }
 }

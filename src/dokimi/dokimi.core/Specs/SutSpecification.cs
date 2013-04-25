@@ -19,13 +19,28 @@ namespace dokimi.core.Specs
             _expectations.DescribeTo(spec, formatter);
         }
 
-        public SpecInfo Run(SpecInfo results, MessageFormatter formatter)
+        public SpecInfo Run(SpecInfo spec, MessageFormatter formatter)
         {
-            var sut = _given.GetSut(results, formatter);
-            var result = _when.GetResult(sut, results, formatter);
-            _expectations.Verify(new object[]{result}, results, formatter);
+            try
+            {
+                _given.DescribeTo(spec, formatter);
+                _when.DescribeTo(spec);
 
-            return results;
+                var sut = _given.GetSut(spec);
+                spec.Givens[0].Pass();
+
+                var result = _when.GetResult(sut);
+                spec.When.Pass();
+
+                _expectations.Verify(new object[] { result }, spec, formatter);
+            }
+            catch
+            {
+                _expectations.DescribeTo(spec, formatter);
+                throw;
+            }
+            
+            return spec;
         }
 
         public SutSpecification<TSut, TResult> Given(string description, Expression<Func<TSut>> given)
@@ -80,12 +95,9 @@ namespace dokimi.core.Specs
             spec.ReportGivenStep(new StepInfo(description));
         }
 
-        public TSut GetSut(SpecInfo info, MessageFormatter formatter)
+        public TSut GetSut(SpecInfo info)
         {
-            DescribeTo(info, formatter);
             var result = _given.Compile()();
-            info.Givens.Select(x => x.Pass()).ToArray();
-
             return result;
         }
     }
@@ -109,12 +121,9 @@ namespace dokimi.core.Specs
                 spec.ReportWhenStep(_when);
         }
 
-        public TResult GetResult(TSut sut, SpecInfo spec, MessageFormatter formatter)
+        public TResult GetResult(TSut sut)
         {
-            DescribeTo(spec);
             var result = _when.Compile()(sut);
-
-            spec.When.Pass();
             return result;
         }
     }
