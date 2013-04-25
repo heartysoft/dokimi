@@ -8,9 +8,4 @@ namespace dokimi.core
         void EnrichDescription(SpecInfo spec, MessageFormatter formatter);
         SpecInfo Run(SpecInfo results, MessageFormatter formatter);
     }
-
-    public interface SpecificationStep
-    {
-        void DescribeTo(SpecInfo spec, MessageFormatter formatter);
-    }
 }

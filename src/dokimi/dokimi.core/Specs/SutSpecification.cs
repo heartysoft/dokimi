@@ -62,7 +62,7 @@ namespace dokimi.core.Specs
         }
     }
 
-    public class GivenSut<TSut> : SpecificationStep
+    public class GivenSut<TSut> 
     {
         private readonly Expression<Func<TSut>> _given;
         private readonly string _description;
@@ -90,7 +90,7 @@ namespace dokimi.core.Specs
         }
     }
 
-    public class WhenSut<TSut, TResult> : SpecificationStep
+    public class WhenSut<TSut, TResult> 
     {
         private readonly Expression<Func<TSut, TResult>> _when;
         private readonly string _description;
