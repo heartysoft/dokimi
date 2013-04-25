@@ -7,7 +7,8 @@ namespace dokimi.core
 {
     public interface Expectation
     {
-        void Verify(object[] input);
+        void DescribeTo(SpecInfo spec);
+        void VerifyTo(object[] input, SpecInfo results);
     }
 
     public class Expectation<T> : Expectation
@@ -26,7 +27,25 @@ namespace dokimi.core
         {
         }
 
-        public void Verify(object[] input)
+        public void DescribeTo(SpecInfo spec)
+        {
+            spec.ReportExpectation(this);
+        }
+
+        public void VerifyTo(object[] input, SpecInfo results)
+        {
+            try
+            {
+                verify(input);
+                results.ReportExpectationPass(this);
+            }
+            catch (Exception e)
+            {
+                results.ReportExpectationFail(this, e);
+            }
+        }
+
+        private void verify(object[] input)
         {
             var eventsOfType = input.OfType<T>();
 

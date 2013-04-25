@@ -4,62 +4,65 @@ using System.Linq.Expressions;
 
 namespace dokimi.core.Specs
 {
-    public class SutSpecification<TSut, TResult> : Specification<GivenSut<TSut>, WhenSut<TSut, TResult>, TResult, SutVerificationInfo<TResult>>
+    public class SutSpecification<TSut, TResult> : Specification
     {
-        public SutSpecification()
+        private GivenSut<TSut> _given;
+        private WhenSut<TSut, TResult> _when;
+        private readonly Expectations _expectations = new Expectations();
+
+        public SpecificationCategory Category { get; set; }
+        
+        public void EnrichDescription(SpecInfo spec, MessageFormatter formatter)
         {
-            base.Then = new Expectation[0];
-
-            OnGiven = (given, spec, formatter) =>
-                          {
-                              given.DescribeTo(spec, formatter);
-                              var sut = given.GetSut();
-                              spec.Givens.Select(x => x.Pass()).ToArray();
-                              return when => when.GetResult(sut, spec, formatter);
-                          };
-
-            OnWhen = result => new SutVerificationInfo<TResult>(result);
+            _given.DescribeTo(spec, formatter);
+            _when.DescribeTo(spec);
+            _expectations.DescribeTo(spec, formatter);
         }
 
-        public new SutSpecification<TSut, TResult> When(string description, Expression<Func<TSut, TResult>> executor)
+        public SpecInfo Run(SpecInfo results, MessageFormatter formatter)
         {
-            base.When = new WhenSut<TSut, TResult>(executor, description);
+            var sut = _given.GetSut(results, formatter);
+            var result = _when.GetResult(sut, results, formatter);
+            _expectations.Verify(new object[]{result}, results, formatter);
+
+            return results;
+        }
+
+        public SutSpecification<TSut, TResult> Given(string description, Expression<Func<TSut>> given)
+        {
+            _given = new GivenSut<TSut>(given, description);
             return this;
         }
 
-        public new SutSpecification<TSut, TResult> When(Expression<Func<TSut, TResult>> executor)
+        public SutSpecification<TSut, TResult> When(string description, Expression<Func<TSut, TResult>> when)
         {
-            base.When = new WhenSut<TSut, TResult>(executor, string.Empty);
+            _when = new WhenSut<TSut, TResult>(when, description);
             return this;
         }
 
-
-        public new SutSpecification<TSut, TResult> Given(Expression<Func<TSut>> factory)
+        public SutSpecification<TSut, TResult> Given(Expression<Func<TSut>> given)
         {
-            return Given(string.Empty, factory);
+            return Given(string.Empty, given);
         }
 
-        public new SutSpecification<TSut, TResult> Given(string description, Expression<Func<TSut>> factory)
+        public SutSpecification<TSut, TResult> When(Expression<Func<TSut, TResult>> when)
         {
-            base.Given = new GivenSut<TSut>(factory, description);
+            return When(string.Empty, when);
+        }
+
+        public SutSpecification<TSut, TResult> Then(string description, Expression<Func<TResult, bool>> expectation)
+        {
+            _expectations.AddExpectation(new Expectation<TResult>(expectation, description));
             return this;
         }
 
-        public new SutSpecification<TSut, TResult> Then(Expression<Func<TResult, bool>> expectation)
+        public SutSpecification<TSut, TResult> Then(Expression<Func<TResult, bool>> expectation)
         {
             return Then(string.Empty, expectation);
         }
-
-        public new SutSpecification<TSut, TResult> Then(string description, Expression<Func<TResult, bool>> expectation)
-        {
-            var exp = new Expectation<TResult>(expectation, description);
-            base.Then.AddExpectation(exp);
-
-            return this;
-        }
     }
 
-    public class GivenSut<TSut> : SpecificationStep
+    public class GivenSut<TSut> 
     {
         private readonly Expression<Func<TSut>> _given;
         private readonly string _description;
@@ -74,16 +77,20 @@ namespace dokimi.core.Specs
         {
             var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_given) : _description;
             
-            spec.Givens = new[]{new StepInfo(description)};
+            spec.ReportGivenStep(new StepInfo(description));
         }
 
-        public TSut GetSut()
+        public TSut GetSut(SpecInfo info, MessageFormatter formatter)
         {
-            return _given.Compile()();
+            DescribeTo(info, formatter);
+            var result = _given.Compile()();
+            info.Givens.Select(x => x.Pass()).ToArray();
+
+            return result;
         }
     }
 
-    public class WhenSut<TSut, TResult> : SpecificationStep
+    public class WhenSut<TSut, TResult> 
     {
         private readonly Expression<Func<TSut, TResult>> _when;
         private readonly string _description;
@@ -94,34 +101,21 @@ namespace dokimi.core.Specs
             _description = description;
         }
 
-        public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
+        public void DescribeTo(SpecInfo spec)
         {
-            var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_when) : _description;
-
-            spec.When = new StepInfo(description);
+            if (!string.IsNullOrWhiteSpace(_description))
+                spec.ReportWhenStep(_description);
+            else
+                spec.ReportWhenStep(_when);
         }
 
         public TResult GetResult(TSut sut, SpecInfo spec, MessageFormatter formatter)
         {
-            var result =  _when.Compile()(sut);
+            DescribeTo(spec);
+            var result = _when.Compile()(sut);
 
             spec.When.Pass();
             return result;
-        }
-    }
-
-    public class SutVerificationInfo<T> : VerificationInput
-    {
-        private readonly T _result;
-
-        public SutVerificationInfo(T result)
-        {
-            _result = result;
-        }
-
-        public void Verify(Expectations expectations, SpecInfo results, MessageFormatter formatter)
-        {
-            expectations.Verify(new []{_result}, results, formatter);
         }
     }
 }

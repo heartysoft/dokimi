@@ -27,6 +27,8 @@ namespace dokimi.nunit
 
                 var spec = testMethod.Invoke(this, new object[0]) as Specification;
                 var formatter = MessageFormatterRegistry.GetFormatter(spec.Category);
+
+                testResult.UseFormatter(formatter);
                 testResult = spec.Run(testResult, formatter);
             }
             catch (Exception e)

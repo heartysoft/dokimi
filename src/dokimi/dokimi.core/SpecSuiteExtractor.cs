@@ -64,8 +64,9 @@ namespace dokimi.core
 
         private SpecInfo getRunInfo(SpecificationMethodInfo spec)
         {
-            var specInfo = new SpecInfo();
-            specInfo.HasExecuted = true;
+            var formatter = getFormatter(spec.Specification);
+            var specInfo = new SpecInfo(formatter);
+            specInfo.ReportSpecExecutionHasTriggered();
             specInfo.Name = getSpecName(spec.MethodInfo.DeclaringType, spec.MethodInfo);
 
             try
@@ -82,7 +83,8 @@ namespace dokimi.core
 
         private SpecInfo getInfo(SpecificationMethodInfo spec)
         {
-            var specInfo = new SpecInfo();
+            var formatter = getFormatter(spec.Specification);
+            var specInfo = new SpecInfo(formatter);
             specInfo.Name = getSpecName(spec.MethodInfo.DeclaringType, spec.MethodInfo);
             spec.Specification.EnrichDescription(specInfo, getFormatter(spec.Specification));
 
