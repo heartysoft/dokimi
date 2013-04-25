@@ -6,6 +6,7 @@ namespace dokimi.core
 {
     public class SpecInfo
     {
+        private MessageFormatter _formatter;
         public bool IsSkipped { get; private set; }
         public bool HasExecutionBeenTriggered { get; private set; }
 
@@ -20,24 +21,16 @@ namespace dokimi.core
 
         private readonly List<ExpectationInfo> _expectationResults = new List<ExpectationInfo>();
 
-        public SpecInfo ReportExpectation(string description)
+        public SpecInfo() : this(new DefaultFormatter())
         {
-            _expectationResults.Add(new ExpectationInfo(description));
-            return this;
         }
 
-        public SpecInfo ReportExpectationPass(string description)
+        public SpecInfo(MessageFormatter formatter)
         {
-            _expectationResults.Add(new ExpectationInfo(description));
-            return this;
+            _formatter = formatter;
         }
 
-        public SpecInfo ReportExpectationFail(string description, Exception e)
-        {
-            _expectationResults.Add(new ExpectationInfo(description) { Exception = e, Passed = false});
-            return this;
-        }
-        
+       
         private readonly List<StepInfo> _givens = new List<StepInfo>();
 
         public SpecInfo ReportGivenStep(StepInfo given)
@@ -61,6 +54,48 @@ namespace dokimi.core
         public SpecInfo ReportSpecExecutionHasTriggered()
         {
             HasExecutionBeenTriggered = true;
+            return this;
+        }
+
+        public void UseFormatter(MessageFormatter formatter)
+        {
+            _formatter = formatter;
+        }
+
+        public void ReportExpectation(Expectation expectation)
+        {
+            ReportExpectation(_formatter.FormatMessage(expectation));
+        }
+
+        public void ReportExpectation(string description)
+        {
+            var expectationInfo = new ExpectationInfo(description);
+            _expectationResults.Add(expectationInfo);
+        }
+
+        public SpecInfo ReportExpectationPass(Expectation expectation)
+        {
+            return ReportExpectationPass(_formatter.FormatMessage(expectation));
+        }
+
+        public SpecInfo ReportExpectationPass(string description)
+        {
+            var expectationInfo = new ExpectationInfo(description);
+            expectationInfo.Pass();
+            _expectationResults.Add(expectationInfo);
+            return this;
+        }
+
+        public SpecInfo ReportExpectationFail(Expectation expectation, Exception e)
+        {
+            return ReportExpectationFail(_formatter.FormatMessage(expectation), e);
+        }
+
+        public SpecInfo ReportExpectationFail(string description, Exception e)
+        {
+            var expectationInfo = new ExpectationInfo(description);
+            expectationInfo.Fail(e);
+            _expectationResults.Add(expectationInfo);
             return this;
         }
     }

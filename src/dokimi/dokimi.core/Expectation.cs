@@ -7,8 +7,8 @@ namespace dokimi.core
 {
     public interface Expectation
     {
-        void DescribeTo(SpecInfo spec, MessageFormatter formatter);
-        void VerifyTo(object[] input, SpecInfo results, MessageFormatter formatter);
+        void DescribeTo(SpecInfo spec);
+        void VerifyTo(object[] input, SpecInfo results);
     }
 
     public class Expectation<T> : Expectation
@@ -27,21 +27,21 @@ namespace dokimi.core
         {
         }
 
-        public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
+        public void DescribeTo(SpecInfo spec)
         {
-            spec.ReportExpectation(formatter.FormatMessage(this));
+            spec.ReportExpectation(this);
         }
 
-        public void VerifyTo(object[] input, SpecInfo results, MessageFormatter formatter)
+        public void VerifyTo(object[] input, SpecInfo results)
         {
             try
             {
                 verify(input);
-                results.ReportExpectationPass(formatter.FormatMessage(this));
+                results.ReportExpectationPass(this);
             }
             catch (Exception e)
             {
-                results.ReportExpectationFail(formatter.FormatMessage(this), e);
+                results.ReportExpectationFail(this, e);
             }
         }
 

@@ -31,7 +31,7 @@ namespace dokimi.core
         public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
         {
             foreach (var expectation in _expectations)
-                expectation.DescribeTo(spec, formatter);
+                expectation.DescribeTo(spec);
         }
 
         public void Verify<T>(T[] input, SpecInfo results, MessageFormatter formatter) 
@@ -39,7 +39,7 @@ namespace dokimi.core
             var objects = input.Select(x => (object)x).ToArray();
 
             foreach (var expectation in _expectations)
-                expectation.VerifyTo(objects, results, formatter);
+                expectation.VerifyTo(objects, results);
         }
 
         public void AddExpectation(Expectation expectation)
