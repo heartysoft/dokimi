@@ -9,7 +9,11 @@ namespace dokimi.core
     {
         private readonly List<Expectation> _expectations = new List<Expectation>();
 
-        private Expectations(Expectation[] expectations)
+        public Expectations()
+        {
+        }
+
+        public Expectations(Expectation[] expectations)
         {
             _expectations.AddRange(expectations);
         }
