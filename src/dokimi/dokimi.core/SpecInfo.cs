@@ -39,9 +39,9 @@ namespace dokimi.core
             return this;
         }
 
-        public SpecInfo ReportWhenStep(StepInfo when)
+        public SpecInfo ReportWhenStep(object when)
         {
-            When = when;
+            When = new StepInfo(formatMessage(when));
             return this;
         }
 
@@ -64,7 +64,7 @@ namespace dokimi.core
 
         public void ReportExpectation(Expectation expectation)
         {
-            ReportExpectation(_formatter.FormatMessage(expectation));
+            ReportExpectation(formatMessage(expectation));
         }
 
         public void ReportExpectation(string description)
@@ -75,7 +75,7 @@ namespace dokimi.core
 
         public SpecInfo ReportExpectationPass(Expectation expectation)
         {
-            return ReportExpectationPass(_formatter.FormatMessage(expectation));
+            return ReportExpectationPass(formatMessage(expectation));
         }
 
         public SpecInfo ReportExpectationPass(string description)
@@ -88,7 +88,7 @@ namespace dokimi.core
 
         public SpecInfo ReportExpectationFail(Expectation expectation, Exception e)
         {
-            return ReportExpectationFail(_formatter.FormatMessage(expectation), e);
+            return ReportExpectationFail(formatMessage(expectation), e);
         }
 
         public SpecInfo ReportExpectationFail(string description, Exception e)
@@ -97,6 +97,11 @@ namespace dokimi.core
             expectationInfo.Fail(e);
             _expectationResults.Add(expectationInfo);
             return this;
+        }
+
+        private string formatMessage(object item)
+        {
+            return _formatter.FormatMessage(item);
         }
     }
 }

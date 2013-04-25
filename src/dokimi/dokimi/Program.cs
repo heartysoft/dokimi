@@ -47,7 +47,7 @@ namespace dokimi
             catch (Exception e)
             {
                 Console.WriteLine("There is a problem with the execution:");
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
             }
         }
 

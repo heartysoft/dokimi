@@ -15,7 +15,7 @@ namespace dokimi.core.Specs
         public void EnrichDescription(SpecInfo spec, MessageFormatter formatter)
         {
             _given.DescribeTo(spec, formatter);
-            _when.DescribeTo(spec, formatter);
+            _when.DescribeTo(spec);
             _expectations.DescribeTo(spec, formatter);
         }
 
@@ -101,16 +101,17 @@ namespace dokimi.core.Specs
             _description = description;
         }
 
-        public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
+        public void DescribeTo(SpecInfo spec)
         {
-            var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_when) : _description;
-
-            spec.ReportWhenStep(new StepInfo(description));
+            if (!string.IsNullOrWhiteSpace(_description))
+                spec.ReportWhenStep(_description);
+            else
+                spec.ReportWhenStep(_when);
         }
 
         public TResult GetResult(TSut sut, SpecInfo spec, MessageFormatter formatter)
         {
-            DescribeTo(spec, formatter);
+            DescribeTo(spec);
             var result = _when.Compile()(sut);
 
             spec.When.Pass();
