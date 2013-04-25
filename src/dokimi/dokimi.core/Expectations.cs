@@ -13,7 +13,7 @@ namespace dokimi.core
         {
         }
 
-        public Expectations(Expectation[] expectations)
+        public Expectations(IEnumerable<Expectation> expectations)
         {
             _expectations.AddRange(expectations);
         }
@@ -30,26 +30,16 @@ namespace dokimi.core
 
         public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
         {
-            foreach (string x in _expectations.Select(formatter.FormatMessage))
-                spec.AddExpectationResult(x, false, null);
+            foreach (var expectation in _expectations)
+                expectation.DescribeTo(spec, formatter);
         }
 
         public void Verify<T>(T[] input, SpecInfo results, MessageFormatter formatter) 
         {
-            foreach (var expectation in _expectations)
-            {
-                var description = formatter.FormatMessage(expectation);
+            var objects = input.Select(x => (object)x).ToArray();
 
-                try
-                {
-                    expectation.Verify(input.Select(x =>(object)x).ToArray());
-                    results.AddExpectationResult(description, true, null);
-                }
-                catch (Exception e)
-                {
-                    results.AddExpectationResult(description, false, e);
-                }
-            }
+            foreach (var expectation in _expectations)
+                expectation.VerifyTo(objects, results, formatter);
         }
 
         public void AddExpectation(Expectation expectation)

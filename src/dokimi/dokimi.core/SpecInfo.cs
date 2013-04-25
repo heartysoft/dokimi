@@ -20,17 +20,24 @@ namespace dokimi.core
 
         private readonly List<ExpectationInfo> _expectationResults = new List<ExpectationInfo>();
 
-        public SpecInfo AddExpectationResult(string description, bool passed, Exception exception)
+        public SpecInfo ReportExpectation(string description)
         {
-            _expectationResults.Add(new ExpectationInfo(description)
-                                        {
-                                            Passed = passed,
-                                            Exception = exception
-                                        });
+            _expectationResults.Add(new ExpectationInfo(description));
             return this;
         }
 
+        public SpecInfo ReportExpectationPass(string description)
+        {
+            _expectationResults.Add(new ExpectationInfo(description));
+            return this;
+        }
 
+        public SpecInfo ReportExpectationFail(string description, Exception e)
+        {
+            _expectationResults.Add(new ExpectationInfo(description) { Exception = e, Passed = false});
+            return this;
+        }
+        
         private readonly List<StepInfo> _givens = new List<StepInfo>();
 
         public SpecInfo ReportGivenStep(StepInfo given)
