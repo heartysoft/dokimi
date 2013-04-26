@@ -70,4 +70,20 @@ namespace dokimi.examples.sut
             return spec;
         }
     }
+
+    [Skip]
+    public class IgnoredSpecWithEmptyReason : SutTest
+    {
+        public Specification Bar()
+        {
+            var spec = new SutSpecification<Calculator, int>();
+            spec.Category = new SpecificationCategory("foo", "bar");
+
+            spec.Given("A calculator", () => new Calculator());
+            spec.When(calc => calc.Add(2, 3));
+            spec.Then("foo", result => result == 5);
+
+            return spec;
+        }
+    }
 }

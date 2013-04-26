@@ -16,7 +16,7 @@ namespace dokimi
             return this;
         }
 
-        public SpecSuite ExtractSuite(params Assembly[] assemblies)
+        public SpecSuite DescribeSuite(params Assembly[] assemblies)
         {
             return processSuite(getdescriptionInfo, assemblies);
         }
@@ -67,8 +67,17 @@ namespace dokimi
         {
             var formatter = getFormatter(spec.Specification);
             var specInfo = new SpecInfo(formatter);
-            specInfo.ReportSpecExecutionHasTriggered();
             specInfo.Name = getSpecName(spec.MethodInfo.DeclaringType, spec.MethodInfo);
+
+            spec.UpdateSkipInformation(specInfo);
+
+            if (specInfo.Skipped.IsSkipped)
+            {
+                spec.Specification.EnrichDescription(specInfo, formatter);
+                return specInfo;
+            }
+
+            specInfo.ReportSpecExecutionHasTriggered();
 
             try
             {

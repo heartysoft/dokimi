@@ -51,7 +51,7 @@ namespace dokimi
 
             RegisterFormatters(formatters, specExtractor, command);
 
-            var specs = command.Action == ActionInfo.Describe ? specExtractor.ExtractSuite(assembly) : specExtractor.RunSuite(assembly);
+            var specs = command.Action == ActionInfo.Describe ? specExtractor.DescribeSuite(assembly) : specExtractor.RunSuite(assembly);
             
             var assemblyName = Path.GetFileNameWithoutExtension(command.AssemblyPath);
             

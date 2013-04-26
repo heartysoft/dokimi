@@ -110,10 +110,12 @@ namespace dokimi.core
         public string Reason { get; private set; }
         public bool IsSkipped { get { return !string.IsNullOrWhiteSpace(Reason); } }
 
-        public const string Unspecified = "Unspecified";
+        private const string Unspecified = "Unspecified";
 
         public SkipInfo(string reason)
         {
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = Unspecified;
             Reason = reason;
         }
 

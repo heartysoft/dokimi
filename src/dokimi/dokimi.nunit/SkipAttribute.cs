@@ -9,5 +9,9 @@ namespace dokimi.nunit
         public SkipAttribute(string reason) : base(reason)
         {
         }
+
+        public SkipAttribute()
+        {
+        }
     }
 }
