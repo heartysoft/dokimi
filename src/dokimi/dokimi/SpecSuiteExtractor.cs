@@ -18,7 +18,7 @@ namespace dokimi
 
         public SpecSuite ExtractSuite(params Assembly[] assemblies)
         {
-            return processSuite(getInfo, assemblies);
+            return processSuite(getdescriptionInfo, assemblies);
         }
 
         public SpecSuite RunSuite(params Assembly[] assemblies)
@@ -82,12 +82,14 @@ namespace dokimi
             return specInfo;
         }
 
-        private SpecInfo getInfo(SpecificationMethodInfo spec)
+        private SpecInfo getdescriptionInfo(SpecificationMethodInfo spec)
         {
             var formatter = getFormatter(spec.Specification);
             var specInfo = new SpecInfo(formatter);
             specInfo.Name = getSpecName(spec.MethodInfo.DeclaringType, spec.MethodInfo);
             spec.Specification.EnrichDescription(specInfo, getFormatter(spec.Specification));
+
+            spec.UpdateSkipInformation(specInfo);
 
             return specInfo;
         }
@@ -122,6 +124,21 @@ namespace dokimi
 
             public Specification Specification { get; private set; }
             public MethodInfo MethodInfo { get; private set; }
+
+            public void UpdateSkipInformation(SpecInfo specInfo)
+            {
+                var skipAttribute =
+                    MethodInfo.DeclaringType.GetCustomAttributes().FirstOrDefault(x => x is SkipAttributeContract) ??
+                    MethodInfo.GetCustomAttributes().FirstOrDefault(x => x is SkipAttributeContract);
+
+                if (skipAttribute == null)
+                    return;
+
+                var typed = (SkipAttributeContract)skipAttribute;
+                string reason = typed.Reason;
+
+                specInfo.ReportSkipped(reason);
+            }
         }
     }
 }

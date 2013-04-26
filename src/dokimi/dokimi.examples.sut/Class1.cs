@@ -23,7 +23,7 @@ namespace dokimi.examples.sut
     }
 
     public class Foo : SutTest
-    { 
+    {
         public Specification Bar()
         {
             var spec = new SutSpecification<Calculator, int>();
@@ -52,6 +52,22 @@ namespace dokimi.examples.sut
         private static Calculator getCalculator()
         {
             return new Calculator();
+        }
+    }
+
+    [Skip("Testing if skipping works.")]
+    public class IgnoredSpec : SutTest
+    {
+        public Specification Bar()
+        {
+            var spec = new SutSpecification<Calculator, int>();
+            spec.Category = new SpecificationCategory("foo", "bar");
+
+            spec.Given("A calculator", () => new Calculator());
+            spec.When(calc => calc.Add(2, 3));
+            spec.Then("foo", result => result == 5);
+
+            return spec;
         }
     }
 }

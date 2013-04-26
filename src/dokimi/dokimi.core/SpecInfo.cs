@@ -7,7 +7,7 @@ namespace dokimi.core
     public class SpecInfo
     {
         private MessageFormatter _formatter;
-        public bool IsSkipped { get; private set; }
+        public SkipInfo Skipped { get; private set; }
         public bool HasExecutionBeenTriggered { get; private set; }
 
         public string Name { get; set; }
@@ -28,6 +28,7 @@ namespace dokimi.core
         public SpecInfo(MessageFormatter formatter)
         {
             _formatter = formatter;
+            Skipped = new SkipInfo();
         }
 
        
@@ -42,12 +43,6 @@ namespace dokimi.core
         public SpecInfo ReportWhenStep(object when)
         {
             When = new StepInfo(formatMessage(when));
-            return this;
-        }
-
-        public SpecInfo ReportSpecShouldBeSkipped()
-        {
-            IsSkipped = true;
             return this;
         }
 
@@ -102,6 +97,33 @@ namespace dokimi.core
         private string formatMessage(object item)
         {
             return _formatter.FormatMessage(item);
+        }
+
+        public void ReportSkipped(string reason)
+        {
+            Skipped = new SkipInfo(reason);
+        }
+    }
+
+    public class SkipInfo
+    {
+        public string Reason { get; private set; }
+        public bool IsSkipped { get { return !string.IsNullOrWhiteSpace(Reason); } }
+
+        public const string Unspecified = "Unspecified";
+
+        public SkipInfo(string reason)
+        {
+            Reason = reason;
+        }
+
+        public SkipInfo()
+        {
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[Skipped. Reason: {0}]", Reason);
         }
     }
 }

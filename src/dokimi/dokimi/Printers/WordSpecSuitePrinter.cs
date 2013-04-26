@@ -48,11 +48,26 @@ namespace dokimi.Printers
             private static void printSpec(DocX document, SpecInfo spec)
             {
                 printName(document, spec);
+                printSkipped(document, spec);
                 printGiven(document, spec);
                 printWhen(document, spec);
                 printThen(document, spec);
 
                 document.InsertParagraph();
+            }
+
+            private static void printSkipped(DocX document, SpecInfo spec)
+            {
+                if (spec.Skipped.IsSkipped)
+                {
+                    document.InsertParagraph()
+                        .Append(spec.Skipped.ToString())
+                        .Font(new FontFamily("Cambria"))
+                            .FontSize(13)
+                            .Bold()
+                            .Color(Color.FromArgb(255, 255, 124, 0))
+                            ;    
+                }
             }
 
             private static void printGiven(DocX document, SpecInfo spec)
