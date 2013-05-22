@@ -22,13 +22,19 @@ namespace dokimi.examples.sut
     {
     }
 
+    public class FooTestCategory : SpecificationCategory
+    {
+        public FooTestCategory() : base("foo", "bar")
+        {
+        }
+    }
+
     public class Foo : SutTest
     {
         public Specification Bar()
         {
             var spec = new SutSpecification<Calculator, int>();
-            spec.Category = new SpecificationCategory("foo", "bar");
-
+            spec.Category<FooTestCategory>();
             spec.Given("A calculator", () => getCalculator());
             spec.When(calc => doWork(calc));
             spec.Then("foo", result => result == 5);
@@ -61,7 +67,7 @@ namespace dokimi.examples.sut
         public Specification Bar()
         {
             var spec = new SutSpecification<Calculator, int>();
-            spec.Category = new SpecificationCategory("foo", "bar");
+            spec.Category<FooTestCategory>();
 
             spec.Given("A calculator", () => new Calculator());
             spec.When(calc => calc.Add(2, 3));
@@ -77,7 +83,7 @@ namespace dokimi.examples.sut
         public Specification Bar()
         {
             var spec = new SutSpecification<Calculator, int>();
-            spec.Category = new SpecificationCategory("foo", "bar");
+            spec.Category<FooTestCategory>();
 
             spec.Given("A calculator", () => new Calculator());
             spec.When(calc => calc.Add(2, 3));
