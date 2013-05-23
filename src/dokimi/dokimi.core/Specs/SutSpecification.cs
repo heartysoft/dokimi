@@ -10,7 +10,7 @@ namespace dokimi.core.Specs
         private WhenSut<TSut, TResult> _when;
         private readonly Expectations _expectations = new Expectations();
 
-        public SpecificationCategory Category { get; set; }
+        public SpecificationCategory SpecificationCategory { get; private set; }
         
         public void EnrichDescription(SpecInfo spec, MessageFormatter formatter)
         {
@@ -41,6 +41,24 @@ namespace dokimi.core.Specs
             }
             
             return spec;
+        }
+
+        public SutSpecification<TSut, TResult> Category<T>() where T : SpecificationCategory, new()
+        {
+            SpecificationCategory = new T();
+            return this;
+        }
+
+        public SutSpecification<TSut, TResult> Category<T>(T category) where T : SpecificationCategory
+        {
+            SpecificationCategory = category;
+            return this;
+        }
+
+        public SutSpecification<TSut, TResult> Category(string contextName, string categoryName)
+        {
+            SpecificationCategory = new SpecificationCategory(contextName, categoryName);
+            return this;
         }
 
         public SutSpecification<TSut, TResult> Given(string description, Expression<Func<TSut>> given)

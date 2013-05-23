@@ -31,7 +31,7 @@ namespace dokimi
             var suite = new SpecSuite();
             var specs = assemblies
                 .SelectMany(getSpecs)
-                .Select(x => new { x.Specification.Category, SpecInfo = processor(x) })
+                .Select(x => new { Category = x.Specification.SpecificationCategory, SpecInfo = processor(x) })
                 .GroupBy(x => x.Category)
                 .Select(group =>
                 {
@@ -117,10 +117,10 @@ namespace dokimi
 
         private MessageFormatter getFormatter(Specification spec)
         {
-            if (_formatters.ContainsKey(spec.Category))
-                return _formatters[spec.Category];
+            if (_formatters.ContainsKey(spec.SpecificationCategory))
+                return _formatters[spec.SpecificationCategory];
 
-            return MessageFormatterRegistry.GetFormatter(spec.Category);
+            return MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
         }
 
         private class SpecificationMethodInfo
