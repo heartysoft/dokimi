@@ -18,6 +18,8 @@ namespace dokimi
             return Directory
                 .GetFiles(path, "*.*", SearchOption.AllDirectories)
                 .Where(s => AssemblyFilesPattern.Contains(Path.GetExtension(s).ToLower()))
+                .Where(x => x.Contains("libzmq") == false)
+                .Where(x => x.Contains("Twang.dll") == false)
                 .ToArray();
         }
     }
