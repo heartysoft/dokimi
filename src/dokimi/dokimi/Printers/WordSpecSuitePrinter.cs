@@ -72,6 +72,9 @@ namespace dokimi.Printers
 
             private static void printGiven(DocX document, SpecInfo spec)
             {
+                if (spec.Givens.Length == 0)
+                    return;
+
                 document.InsertParagraph()
                     .Append("Given")
                     .Font(new FontFamily("Cambria"))
