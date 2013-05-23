@@ -79,6 +79,14 @@ namespace dokimi
                         "fp=|formattersPath=", @"Source path for the test message formatters. (if not provided, config is used. If not present in config, \formatters is used.",
                         path => config.Formatters.IncludePath = path
                     },
+                    {
+                        "a=|action=", "Action (Describe|Execute). Default is Describe.", pf =>
+                            {
+                                ActionInfo actionInfo;
+                                if (Enum.TryParse(pf, true, out actionInfo))
+                                    config.Action = actionInfo;
+                            }
+                    },
                     {"h|?|help", v => success = v == null},
                 };
 
