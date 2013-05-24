@@ -52,7 +52,7 @@ namespace dokimi.core
             if (eventsOfType.Any(e => Expect.Compile()(e)))
                 return;
 
-            throw new ExpectationFailedException<T>(this, input);
+            throw new ExpectationFailedException(this, input);
         }
 
 

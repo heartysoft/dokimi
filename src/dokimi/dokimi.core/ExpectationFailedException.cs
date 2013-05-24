@@ -3,14 +3,14 @@ using System.Text;
 
 namespace dokimi.core
 {
-    public class ExpectationFailedException<T> : Exception
+    public class ExpectationFailedException : Exception
     {
-        public ExpectationFailedException(Expectation<T> expectation, object[] generatedEvents)
+        public ExpectationFailedException(Expectation expectation, object[] generatedEvents)
             : base(generateMessage(expectation, generatedEvents))
         {
         }
 
-        private static string generateMessage(Expectation<T> expectation, object[] generatedEvents)
+        private static string generateMessage(Expectation expectation, object[] generatedEvents)
         {
             var sb = new StringBuilder();
             sb.AppendFormat("Expected {0}", expectation);
