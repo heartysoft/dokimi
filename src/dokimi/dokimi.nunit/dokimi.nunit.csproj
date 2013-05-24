@@ -49,6 +49,7 @@
     <Compile Include="SkipAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="dokimi.nunit.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
