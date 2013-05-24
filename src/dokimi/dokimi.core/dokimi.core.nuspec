@@ -14,4 +14,7 @@
     <dependencies>
     </dependencies>
   </metadata>
+  <files>
+    <file src=".\..\dokimi\bin\$configuration$\*.*" target="tools\dokimi\" />
+  </files>
 </package>
