@@ -33,14 +33,46 @@ namespace dokimi.examples.sut
     {
         public Specification Bar()
         {
-            var spec = new SutSpecification<Calculator, int>();
-            spec.Category<FooTestCategory>();
-            spec.Given("A calculator", () => getCalculator());
-            spec.When(calc => doWork(calc));
-            spec.Then("foo", result => result == 5);
-            spec.Then(result => result == 5);
-            spec.Then(result => result == 5);
-            spec.Then(result => match(result));
+            var spec =
+                Specifcations
+                    .Catalog.Sut<Calculator, int, FooTestCategory>()
+                    .Given("A calcultator", () => getCalculator())
+                    .When(calc => doWork(calc))
+                    .Then("foo", result => result == 5)
+                    .Then(result => result == 5)
+                    .Then(result => result == 5)
+                    .Then(result => match(result))
+                    .Build();
+
+            return spec;
+        }
+
+        private static bool match(int result)
+        {
+            return result == 5;
+        }
+
+        private static int doWork(Calculator calc)
+        {
+            return calc.Add(2, 3);
+        }
+
+        private static Calculator getCalculator()
+        {
+            return new Calculator();
+        }
+    }
+
+    public class Foo2 : SutTest
+    {
+        public Specification Bar()
+        {
+            var spec =
+                Specifcations
+                    .Catalog.Sut<Calculator, int, FooTestCategory>()
+                    .Given("A calcultator", () => getCalculator())
+                    .When(calc => doWork(calc))
+                    .Then(5);
 
             return spec;
         }
@@ -66,13 +98,12 @@ namespace dokimi.examples.sut
     {
         public Specification Bar()
         {
-            var spec = new SutSpecification<Calculator, int>();
-            spec.Category<FooTestCategory>();
-
-            spec.Given("A calculator", () => new Calculator());
-            spec.When(calc => calc.Add(2, 3));
-            spec.Then("foo", result => result == 5);
-
+            var spec =
+                Specifcations.Catalog.Sut<Calculator, int, FooTestCategory>()
+                             .Given("A calculator", () => new Calculator())
+                             .When(x => x.Add(2, 3))
+                             .Then(5);
+            
             return spec;
         }
     }
@@ -82,12 +113,11 @@ namespace dokimi.examples.sut
     {
         public Specification Bar()
         {
-            var spec = new SutSpecification<Calculator, int>();
-            spec.Category<FooTestCategory>();
-
-            spec.Given("A calculator", () => new Calculator());
-            spec.When(calc => calc.Add(2, 3));
-            spec.Then("foo", result => result == 5);
+            var spec =
+                Specifcations.Catalog.Sut<Calculator, int, FooTestCategory>()
+                             .Given("A calculator", () => new Calculator())
+                             .When(x => x.Add(2, 3))
+                             .Then(5);
 
             return spec;
         }

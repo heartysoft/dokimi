@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\MessageFormatterTypeKeyAttribute.cs" />
+    <Compile Include="EqualityExpectation.cs" />
     <Compile Include="Expectation.cs" />
     <Compile Include="ExpectationFailedException.cs" />
     <Compile Include="Expectations.cs" />
@@ -50,10 +51,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkipAttributeContract.cs" />
     <Compile Include="ExpectationInfo.cs" />
+    <Compile Include="Specifcations.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="SpecificationCategory.cs" />
     <Compile Include="SpecificationTest.cs" />
     <Compile Include="SpecInfo.cs" />
+    <Compile Include="Specs\SpecificationExtensionsForSutSpecifications.cs" />
     <Compile Include="Specs\SutSpecification.cs" />
     <Compile Include="StepInfo.cs" />
     <Compile Include="StringExtensions.cs" />

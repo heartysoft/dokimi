@@ -54,7 +54,8 @@ namespace dokimi.nunit
 
                 foreach (var failure in failures)
                 {
-                    sb.AppendLine(failure.Description);
+                    sb.AppendLine(string.Format("Failed specification: {0}", failure.Description));
+                    sb.AppendLine(failure.Exception.ToString());
                     sb.AppendLine();
                     sb.AppendLine();
                 }

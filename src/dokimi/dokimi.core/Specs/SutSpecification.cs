@@ -11,12 +11,134 @@ namespace dokimi.core.Specs
         private readonly Expectations _expectations = new Expectations();
 
         public SpecificationCategory SpecificationCategory { get; private set; }
-        
+
         public void EnrichDescription(SpecInfo spec, MessageFormatter formatter)
         {
             _given.DescribeTo(spec, formatter);
             _when.DescribeTo(spec);
             _expectations.DescribeTo(spec, formatter);
+        }
+
+
+        public static ExpectingGiven New<T>() where T : SpecificationCategory, new()
+        {
+            return New(new T());
+        }
+
+        public static ExpectingGiven New(string context, string category) 
+        {
+            return New(new SpecificationCategory(context, category));
+        }
+
+        public static ExpectingGiven New<T>(T category) where T : SpecificationCategory
+        {
+            var instance = new SutSpecification<TSut, TResult>(category);
+            return new ExpectingGiven(instance);
+        }
+
+        private SutSpecification(SpecificationCategory specificationCategory)
+        {
+            SpecificationCategory = specificationCategory;
+        }
+
+        public class ExpectingGiven
+        {
+            private readonly SutSpecification<TSut, TResult> _instance;
+
+            public ExpectingGiven(SutSpecification<TSut, TResult> instance)
+            {
+                _instance = instance;
+            }
+
+            public ExpectingWhen Given(Expression<Func<TSut>> factory)
+            {
+                return Given(null, factory);
+            }
+
+            public ExpectingWhen Given(string description, Expression<Func<TSut>> factory)
+            {
+                _instance._given = new GivenSut<TSut>(factory, description);
+                return new ExpectingWhen(_instance);
+            }
+        }
+
+        public class ExpectingWhen
+        {
+            private readonly SutSpecification<TSut, TResult> _instance;
+
+            public ExpectingWhen(SutSpecification<TSut, TResult> instance)
+            {
+                _instance = instance;
+            }
+
+            public ExpectingThen When(Expression<Func<TSut, TResult>> when)
+            {
+                return When(null, when);
+            }
+
+            public ExpectingThen When(string description, Expression<Func<TSut, TResult>> when)
+            {
+                _instance._when = new WhenSut<TSut, TResult>(when, description);
+                return new ExpectingThen(_instance);
+            }
+        }
+
+        public class ExpectingThen
+        {
+            private readonly SutSpecification<TSut, TResult> _instance;
+
+            public ExpectingThen(SutSpecification<TSut, TResult> instance)
+            {
+                _instance = instance;
+            }
+
+            public ExpectingAnotherThen Then(Expression<Func<TResult, bool>> expectation)
+            {
+                return Then(null, expectation);
+            }
+
+            public ExpectingAnotherThen Then(string description, Expression<Func<TResult, bool>> expectation)
+            {
+                _instance._expectations.AddExpectation(new Expectation<TResult>(expectation, description));
+                return new ExpectingAnotherThen(_instance);
+            }
+
+            public SutSpecification<TSut, TResult> Then(TResult expected)
+            {
+                return Then(null, expected);
+            }
+
+            public SutSpecification<TSut, TResult> Then(string description, TResult expected)
+            {
+                _instance._expectations.AddExpectation(new EqualityExpectation(expected, description));
+                return _instance;
+            }
+        }
+
+        public class ExpectingAnotherThen
+        {
+            private readonly SutSpecification<TSut, TResult> _instance;
+
+            public ExpectingAnotherThen(SutSpecification<TSut, TResult> instance)
+            {
+                _instance = instance;
+            }
+
+            public ExpectingAnotherThen Then(Expression<Func<TResult, bool>> expectation)
+            {
+                return Then(null, expectation);
+            }
+
+            public ExpectingAnotherThen Then(string description, Expression<Func<TResult, bool>> expectation)
+            {
+                _instance._expectations.AddExpectation(new Expectation<TResult>(expectation, description));
+                return new ExpectingAnotherThen(_instance);
+            }
+
+            public SutSpecification<TSut, TResult> Build()
+            {
+                return _instance;
+            }
         }
 
         public SpecInfo Run(SpecInfo spec, MessageFormatter formatter)
@@ -41,57 +163,6 @@ namespace dokimi.core.Specs
             }
             
             return spec;
-        }
-
-        public SutSpecification<TSut, TResult> Category<T>() where T : SpecificationCategory, new()
-        {
-            SpecificationCategory = new T();
-            return this;
-        }
-
-        public SutSpecification<TSut, TResult> Category<T>(T category) where T : SpecificationCategory
-        {
-            SpecificationCategory = category;
-            return this;
-        }
-
-        public SutSpecification<TSut, TResult> Category(string contextName, string categoryName)
-        {
-            SpecificationCategory = new SpecificationCategory(contextName, categoryName);
-            return this;
-        }
-
-        public SutSpecification<TSut, TResult> Given(string description, Expression<Func<TSut>> given)
-        {
-            _given = new GivenSut<TSut>(given, description);
-            return this;
-        }
-
-        public SutSpecification<TSut, TResult> When(string description, Expression<Func<TSut, TResult>> when)
-        {
-            _when = new WhenSut<TSut, TResult>(when, description);
-            return this;
-        }
-
-        public SutSpecification<TSut, TResult> Given(Expression<Func<TSut>> given)
-        {
-            return Given(string.Empty, given);
-        }
-
-        public SutSpecification<TSut, TResult> When(Expression<Func<TSut, TResult>> when)
-        {
-            return When(string.Empty, when);
-        }
-
-        public SutSpecification<TSut, TResult> Then(string description, Expression<Func<TResult, bool>> expectation)
-        {
-            _expectations.AddExpectation(new Expectation<TResult>(expectation, description));
-            return this;
-        }
-
-        public SutSpecification<TSut, TResult> Then(Expression<Func<TResult, bool>> expectation)
-        {
-            return Then(string.Empty, expectation);
         }
     }
 
