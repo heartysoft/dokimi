@@ -19,18 +19,7 @@ namespace dokimi.core.Specs
             _expectations.DescribeTo(spec, formatter);
         }
 
-
-        public static ExpectingGiven New<T>() where T : SpecificationCategory, new()
-        {
-            return New(new T());
-        }
-
-        public static ExpectingGiven New(string context, string category) 
-        {
-            return New(new SpecificationCategory(context, category));
-        }
-
-        public static ExpectingGiven New<T>(T category) where T : SpecificationCategory
+        internal static ExpectingGiven New(SpecificationCategory category)
         {
             var instance = new SutSpecification<TSut, TResult>(category);
             return new ExpectingGiven(instance);
