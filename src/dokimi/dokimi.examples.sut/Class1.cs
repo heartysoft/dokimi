@@ -34,7 +34,7 @@ namespace dokimi.examples.sut
         public Specification Bar()
         {
             var spec =
-                Specifcations
+                Specifications
                     .Catalog.Sut<Calculator, int, FooTestCategory>()
                     .Given("A calcultator", () => getCalculator())
                     .When(calc => doWork(calc))
@@ -68,7 +68,7 @@ namespace dokimi.examples.sut
         public Specification Bar()
         {
             var spec =
-                Specifcations
+                Specifications
                     .Catalog.Sut<Calculator, int, FooTestCategory>()
                     .Given("A calcultator", () => getCalculator())
                     .When(calc => doWork(calc))
@@ -99,7 +99,7 @@ namespace dokimi.examples.sut
         public Specification Bar()
         {
             var spec =
-                Specifcations.Catalog.Sut<Calculator, int, FooTestCategory>()
+                Specifications.Catalog.Sut<Calculator, int, FooTestCategory>()
                              .Given("A calculator", () => new Calculator())
                              .When(x => x.Add(2, 3))
                              .Then(5);
@@ -114,7 +114,7 @@ namespace dokimi.examples.sut
         public Specification Bar()
         {
             var spec =
-                Specifcations.Catalog.Sut<Calculator, int, FooTestCategory>()
+                Specifications.Catalog.Sut<Calculator, int, FooTestCategory>()
                              .Given("A calculator", () => new Calculator())
                              .When(x => x.Add(2, 3))
                              .Then(5);

@@ -51,7 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkipAttributeContract.cs" />
     <Compile Include="ExpectationInfo.cs" />
-    <Compile Include="Specifcations.cs" />
+    <Compile Include="Specifications.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="SpecificationCategory.cs" />
     <Compile Include="SpecificationTest.cs" />
