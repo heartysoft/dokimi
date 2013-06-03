@@ -52,16 +52,34 @@ namespace dokimi.nunit
             {
                 var failures = specInfo.Thens.Where(x => !x.Passed);
 
+                
                 foreach (var failure in failures)
                 {
                     sb.AppendLine(string.Format("Failed specification: {0}", failure.Description));
-                    sb.AppendLine(failure.Exception.ToString());
+                    getGherkin(specInfo, sb);
+                    sb.AppendLine();
+                    sb.AppendLine(string.Format("Exception: {0}", failure.Exception));
                     sb.AppendLine();
                     sb.AppendLine();
                 }
             }
 
             Assert.Fail(sb.ToString());
+        }
+
+        private static void getGherkin(SpecInfo specInfo, StringBuilder sb)
+        {
+            var failedGivens = specInfo.Givens.Where(x => x.Passed).ToList();
+            var failedThens = specInfo.Thens.Where(x => !x.Passed).ToList();
+            var when = specInfo.When.Description;
+
+            foreach (var given in failedGivens)
+                sb.AppendLine(string.Format("Given {0}", given.Description));
+
+            sb.AppendLine(string.Format("When {0}", when));
+
+            foreach (var then in failedThens)
+                sb.AppendLine(string.Format("Then {0}", then.Description));
         }
     }
 }
