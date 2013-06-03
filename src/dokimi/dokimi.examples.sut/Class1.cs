@@ -70,8 +70,8 @@ namespace dokimi.examples.sut
             var spec =
                 Specifications
                     .Catalog.Sut<Calculator, int, FooTestCategory>()
-                    .Given("A calcultator", () => getCalculator())
-                    .When(calc => doWork(calc))
+                    .Given("A calculator", () => getCalculator())
+                    .When("Numbers 2 and 3 are added", calc => addTwoNumbers(calc, 2, 3))
                     .Then(5);
 
             return spec;
@@ -82,9 +82,9 @@ namespace dokimi.examples.sut
             return result == 5;
         }
 
-        private static int doWork(Calculator calc)
+        private static int addTwoNumbers(Calculator calc, int num1, int num2)
         {
-            return calc.Add(2, 3);
+            return calc.Add(num1, num2);
         }
 
         private static Calculator getCalculator()
