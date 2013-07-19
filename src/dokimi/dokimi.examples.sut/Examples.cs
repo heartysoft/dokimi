@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Management.Instrumentation;
-using System.Text;
-using System.Threading.Tasks;
-using dokimi.core;
-using dokimi.core.Specs;
+﻿using dokimi.core;
 using dokimi.nunit;
 
 namespace dokimi.examples.sut
@@ -75,11 +68,6 @@ namespace dokimi.examples.sut
                     .Then(5);
 
             return spec;
-        }
-
-        private static bool match(int result)
-        {
-            return result == 5;
         }
 
         private static int addTwoNumbers(Calculator calc, int num1, int num2)

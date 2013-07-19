@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace dokimi.core
 {
@@ -102,6 +103,104 @@ namespace dokimi.core
         public void ReportSkipped(string reason)
         {
             Skipped = new SkipInfo(reason);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            printName(sb, this);
+            printSkipped(sb, this);
+            printGiven(sb, this);
+            printWhen(sb, this);
+            printThen(sb, this);
+
+            return sb.ToString();
+        }
+
+        private static void printThen(StringBuilder sb, SpecInfo spec)
+        {
+            sb.AppendLine("Then");
+
+            foreach (var then in spec.Thens)
+            {
+                sb.Append(" - ");
+                var description = spec.HasExecutionBeenTriggered
+                                      ? string.Format("{0} [{1}]", then.Description, then.Passed ? "Passed" : "Failed")
+                                      : then.Description;
+
+                sb.AppendLine(description);
+
+
+                if (!then.Passed && then.Exception != null)
+                {
+                    sb.AppendLine("_____________________________________________");
+                    sb.AppendLine(then.Exception.ToString());
+                    sb.AppendLine("_____________________________________________");
+                    sb.AppendLine();
+                }
+            }
+        }
+
+        private static void printWhen(StringBuilder sb, SpecInfo spec)
+        {
+            sb.AppendLine("When");
+
+            sb.Append(" - ");
+            sb.AppendLine(spec.HasExecutionBeenTriggered
+                ? string.Format("{0} [{1}]", spec.When.Description, spec.When.Passed ? "Passed" : "Failed")
+                : spec.When.Description);
+
+            if (shouldDisplayWhenException(spec))
+            {
+                sb.AppendLine(spec.Exception.ToString());
+                sb.AppendLine(spec.Exception.StackTrace);
+            }
+        }
+
+        private static bool shouldDisplayWhenException(SpecInfo spec)
+        {
+            return !spec.When.Passed && spec.Exception != null
+                && spec.Givens.All(x => x.Passed);
+        }
+
+        private static void printGiven(StringBuilder sb, SpecInfo spec)
+        {
+            if (spec.Givens.Length == 0)
+                return;
+
+            sb.AppendLine("Given");
+
+            foreach (var given in spec.Givens)
+            {
+                var description = spec.HasExecutionBeenTriggered
+                                      ? string.Format("{0} [{1}]", given.Description,
+                                                      given.Passed ? "Passed" : "Failed")
+                                      : given.Description;
+
+                sb.Append(" - ");
+                sb.AppendLine(description);
+            }
+
+
+            if (!spec.Givens.All(x => x.Passed) && spec.Exception != null)
+            {
+                sb.AppendLine(spec.Exception.ToString());
+            }
+        }
+
+        private static void printSkipped(StringBuilder sb, SpecInfo specInfo)
+        {
+            if (specInfo.Skipped.IsSkipped)
+            {
+                sb.AppendLine(specInfo.Skipped.ToString());
+            }
+        }
+
+        private static void printName(StringBuilder sb, SpecInfo specInfo)
+        {
+            sb.AppendLine(specInfo.Name);
+            sb.AppendLine("=============================================================");
         }
     }
 

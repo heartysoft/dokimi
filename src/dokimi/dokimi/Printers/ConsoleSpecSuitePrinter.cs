@@ -1,5 +1,4 @@
 using System;
-using dokimi.core;
 
 namespace dokimi.Printers
 {
@@ -15,37 +14,8 @@ namespace dokimi.Printers
             Console.ForegroundColor = ConsoleColor.Magenta;
             foreach (var spec in specCategory.Specs)
             {
-                Console.WriteLine(spec.Name);
-                Console.WriteLine();
-
-                printHeading("Given");
-
-                Console.ForegroundColor = ConsoleColor.Cyan;
-
-                foreach (var given in spec.Givens)
-                    Console.WriteLine("\t{0}", given.Description);
-
-                printHeading("When");
-
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("\t{0}", spec.When.Description);
-
-                printHeading("Then");
-
-                Console.ForegroundColor = ConsoleColor.Cyan;
-
-                foreach (var then in spec.Thens)
-                    Console.WriteLine("\t{0}", then.Description);
-
-                Console.WriteLine();
-                Console.WriteLine();
+                Console.WriteLine(spec.ToString());
             }
-        }
-
-        private static void printHeading(string heading)
-        {
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine(heading);
         }
 
         public void Print(SpecSuite suite)
