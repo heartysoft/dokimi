@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using NUnit.Framework;
 using dokimi.core;
 
@@ -14,37 +15,43 @@ namespace dokimi.nunit
         [Test]
         public void Execute()
         {
-            var testResult = new SpecInfo();
-            testResult.ReportSpecExecutionHasTriggered();
+            var allSpecTestsPassed = false;
+            var testResultBuilder = new StringBuilder();
 
-            try
+            var specMethods =
+                GetType().GetMethods().Where(x => typeof(Specification).IsAssignableFrom(x.ReturnType));
+            foreach (var testMethod in specMethods)
             {
-                var specMethods =
-                    GetType().GetMethods().Where(x => typeof(Specification).IsAssignableFrom(x.ReturnType));
+                var testResult = new SpecInfo();
+                testResult.ReportSpecExecutionHasTriggered();
 
-                var testMethod = specMethods.Single();
+                try
+                {
+                    testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
+                    testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
 
-                testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
+                    var spec = testMethod.Invoke(this, new object[0]) as Specification;
+                    var formatter = MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
 
-                var spec = testMethod.Invoke(this, new object[0]) as Specification;
-                var formatter = MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
+                    testResult.UseFormatter(formatter);
+                    testResult = spec.Run(testResult, formatter);
+                }
+                catch (Exception e)
+                {
+                    testResult.Exception = e;
+                }
 
-                testResult.UseFormatter(formatter);
-                testResult = spec.Run(testResult, formatter);
+                testResultBuilder.AppendLine(testResult.ToString());
+                allSpecTestsPassed = testResult.Passed;
             }
-            catch (Exception e)
-            {
-                testResult.Exception = e;
-            }
 
-            if (testResult.Passed)
+            if (allSpecTestsPassed)
             {
-                Console.WriteLine(testResult);
-                
+                Console.WriteLine(testResultBuilder);
                 return;
             }
 
-            Assert.Fail(testResult.ToString());
+            Assert.Fail(testResultBuilder.ToString());
         }
 
         private static string getSpecName(Type type, MethodInfo methodInfo)

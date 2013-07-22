@@ -1,4 +1,5 @@
-﻿using dokimi.core;
+﻿using System.Collections.Generic;
+using dokimi.core;
 using dokimi.nunit;
 
 namespace dokimi.examples.sut
@@ -59,6 +60,43 @@ namespace dokimi.examples.sut
     public class Foo2 : SutTest
     {
         public Specification Bar()
+        {
+            var spec =
+                Specifications
+                    .Catalog.Sut<Calculator, int, FooTestCategory>()
+                    .Given("A calculator", () => getCalculator())
+                    .When("Numbers 2 and 3 are added", calc => addTwoNumbers(calc, 2, 3))
+                    .Then(5);
+
+            return spec;
+        }
+
+        private static int addTwoNumbers(Calculator calc, int num1, int num2)
+        {
+            return calc.Add(num1, num2);
+        }
+
+        private static Calculator getCalculator()
+        {
+            return new Calculator();
+        }
+    }
+
+    public class ExampleWithMultipleSpecs : SutTest
+    {
+        public Specification Bar()
+        {
+            var spec =
+                Specifications
+                    .Catalog.Sut<Calculator, int, FooTestCategory>()
+                    .Given("A calculator", () => getCalculator())
+                    .When("Numbers 2 and 3 are added", calc => addTwoNumbers(calc, 2, 3))
+                    .Then(5);
+
+            return spec;
+        }
+
+        public Specification Bar2()
         {
             var spec =
                 Specifications
