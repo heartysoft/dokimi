@@ -15,7 +15,7 @@ namespace dokimi.nunit
         [Test]
         public void Execute()
         {
-            var allSpecTestsPassed = false;
+            var allSpecTestsPassed = true;
             var testResultBuilder = new StringBuilder();
 
             var specMethods =
@@ -42,7 +42,9 @@ namespace dokimi.nunit
                 }
 
                 testResultBuilder.AppendLine(testResult.ToString());
-                allSpecTestsPassed = testResult.Passed;
+
+                if (!testResult.Passed && allSpecTestsPassed)
+                    allSpecTestsPassed = false;
             }
 
             if (allSpecTestsPassed)
