@@ -29,7 +29,6 @@ namespace dokimi.nunit
                 try
                 {
                     testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
-                    testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
 
                     var spec = testMethod.Invoke(this, new object[0]) as Specification;
                     var formatter = MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
