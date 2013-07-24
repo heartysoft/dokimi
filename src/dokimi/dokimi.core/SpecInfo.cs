@@ -31,7 +31,6 @@ namespace dokimi.core
             _formatter = formatter;
             Skipped = new SkipInfo();
         }
-
        
         private readonly List<StepInfo> _givens = new List<StepInfo>();
 

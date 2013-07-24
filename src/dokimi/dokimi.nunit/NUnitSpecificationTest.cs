@@ -15,11 +15,12 @@ namespace dokimi.nunit
         [Test]
         public void Execute()
         {
-            var allSpecTestsPassed = false;
+            var allSpecTestsPassed = true;
             var testResultBuilder = new StringBuilder();
 
             var specMethods =
                 GetType().GetMethods().Where(x => typeof(Specification).IsAssignableFrom(x.ReturnType));
+            
             foreach (var testMethod in specMethods)
             {
                 var testResult = new SpecInfo();
@@ -41,8 +42,10 @@ namespace dokimi.nunit
                     testResult.Exception = e;
                 }
 
-                testResultBuilder.AppendLine(testResult.ToString());
-                allSpecTestsPassed = testResult.Passed;
+                testResultBuilder.AppendLine(getDescription(testResult));
+
+                if (testResult.Passed == false)
+                    allSpecTestsPassed = false;
             }
 
             if (allSpecTestsPassed)
@@ -52,6 +55,27 @@ namespace dokimi.nunit
             }
 
             Assert.Fail(testResultBuilder.ToString());
+        }
+
+        private string getDescription(SpecInfo spec)
+        {
+            if (spec.Passed)
+                return spec.ToString();
+
+            var basicString = spec.ToString();
+            var lines = basicString.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (i != 0 && i != 1 && i != lines.Length - 1)
+                    sb.Append("  ==>  ");
+
+                sb.AppendLine(lines[i]);
+            }
+
+            return sb.ToString();
         }
 
         private static string getSpecName(Type type, MethodInfo methodInfo)
