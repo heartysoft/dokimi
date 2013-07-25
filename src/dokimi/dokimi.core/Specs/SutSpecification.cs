@@ -6,8 +6,8 @@ namespace dokimi.core.Specs
 {
     public class SutSpecification<TSut, TResult> : Specification
     {
-        private GivenSut<TSut> _given;
-        private WhenSut<TSut, TResult> _when;
+        private GivenSut _given;
+        private WhenSut _when;
         private readonly Expectations _expectations = new Expectations();
 
         public SpecificationCategory SpecificationCategory { get; private set; }
@@ -46,7 +46,7 @@ namespace dokimi.core.Specs
 
             public ExpectingWhen Given(string description, Expression<Func<TSut>> factory)
             {
-                _instance._given = new GivenSut<TSut>(factory, description);
+                _instance._given = new GivenSut(factory, description);
                 return new ExpectingWhen(_instance);
             }
         }
@@ -67,7 +67,7 @@ namespace dokimi.core.Specs
 
             public ExpectingThen When(string description, Expression<Func<TSut, TResult>> when)
             {
-                _instance._when = new WhenSut<TSut, TResult>(when, description);
+                _instance._when = new WhenSut(when, description);
                 return new ExpectingThen(_instance);
             }
         }
@@ -153,56 +153,56 @@ namespace dokimi.core.Specs
             
             return spec;
         }
-    }
 
-    public class GivenSut<TSut> 
-    {
-        private readonly Expression<Func<TSut>> _given;
-        private readonly string _description;
-
-        public GivenSut(Expression<Func<TSut>> given, string description)
+        private class GivenSut
         {
-            _given = given;
-            _description = description;
+            private readonly Expression<Func<TSut>> _given;
+            private readonly string _description;
+
+            public GivenSut(Expression<Func<TSut>> given, string description)
+            {
+                _given = given;
+                _description = description;
+            }
+
+            public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
+            {
+                var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_given) : _description;
+
+                spec.ReportGivenStep(new StepInfo(description));
+            }
+
+            public TSut GetSut(SpecInfo info)
+            {
+                var result = _given.Compile()();
+                return result;
+            }
         }
 
-        public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
+        private class WhenSut
         {
-            var description = string.IsNullOrWhiteSpace(_description) ? formatter.FormatMessage(_given) : _description;
-            
-            spec.ReportGivenStep(new StepInfo(description));
-        }
+            private readonly Expression<Func<TSut, TResult>> _when;
+            private readonly string _description;
 
-        public TSut GetSut(SpecInfo info)
-        {
-            var result = _given.Compile()();
-            return result;
-        }
-    }
+            public WhenSut(Expression<Func<TSut, TResult>> when, string description)
+            {
+                _when = when;
+                _description = description;
+            }
 
-    public class WhenSut<TSut, TResult> 
-    {
-        private readonly Expression<Func<TSut, TResult>> _when;
-        private readonly string _description;
-        
-        public WhenSut(Expression<Func<TSut, TResult>> when, string description)
-        {
-            _when = when;
-            _description = description;
-        }
+            public void DescribeTo(SpecInfo spec)
+            {
+                if (!string.IsNullOrWhiteSpace(_description))
+                    spec.ReportWhenStep(_description);
+                else
+                    spec.ReportWhenStep(_when);
+            }
 
-        public void DescribeTo(SpecInfo spec)
-        {
-            if (!string.IsNullOrWhiteSpace(_description))
-                spec.ReportWhenStep(_description);
-            else
-                spec.ReportWhenStep(_when);
-        }
-
-        public TResult GetResult(TSut sut)
-        {
-            var result = _when.Compile()(sut);
-            return result;
+            public TResult GetResult(TSut sut)
+            {
+                var result = _when.Compile()(sut);
+                return result;
+            }
         }
     }
 }
