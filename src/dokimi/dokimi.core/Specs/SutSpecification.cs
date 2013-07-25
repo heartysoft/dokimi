@@ -8,6 +8,8 @@ namespace dokimi.core.Specs
     {
         private GivenSut _given;
         private WhenSut _when;
+        private ExceptionSut _expectedException;
+        
         private readonly Expectations _expectations = new Expectations();
 
         public SpecificationCategory SpecificationCategory { get; private set; }
@@ -60,23 +62,23 @@ namespace dokimi.core.Specs
                 _instance = instance;
             }
 
-            public ExpectingThen When(Expression<Func<TSut, TResult>> when)
+            public ExpectingThenOrException When(Expression<Func<TSut, TResult>> when)
             {
                 return When(null, when);
             }
 
-            public ExpectingThen When(string description, Expression<Func<TSut, TResult>> when)
+            public ExpectingThenOrException When(string description, Expression<Func<TSut, TResult>> when)
             {
                 _instance._when = new WhenSut(when, description);
-                return new ExpectingThen(_instance);
+                return new ExpectingThenOrException(_instance);
             }
         }
 
-        public class ExpectingThen
+        public class ExpectingThenOrException
         {
             private readonly SutSpecification<TSut, TResult> _instance;
 
-            public ExpectingThen(SutSpecification<TSut, TResult> instance)
+            public ExpectingThenOrException(SutSpecification<TSut, TResult> instance)
             {
                 _instance = instance;
             }
@@ -101,6 +103,23 @@ namespace dokimi.core.Specs
             {
                 _instance._expectations.AddExpectation(new EqualityExpectation(expected, description));
                 return _instance;
+            }
+
+            public SutSpecification<TSut, TResult> ExpectException<TException>(string description = null) where TException : Exception
+            {
+                _instance._expectedException = new ExceptionSut<TException>(description);
+                return _instance;
+            }
+
+            public SutSpecification<TSut, TResult> ExpectException<TException>(string description, Expression<Func<TException, bool>> expression) where TException : Exception
+            {
+                _instance._expectedException = new ExceptionSut<TException>(expression, description);
+                return _instance;
+            }
+
+            public SutSpecification<TSut, TResult> ExpectException<TException>(Expression<Func<TException, bool>> expression) where TException : Exception
+            {
+                return ExpectException(null, expression);
             }
         }
 
@@ -202,6 +221,28 @@ namespace dokimi.core.Specs
             {
                 var result = _when.Compile()(sut);
                 return result;
+            }
+        }
+
+        private interface ExceptionSut
+        {
+            
+        }
+
+        private class ExceptionSut<T> : ExceptionSut where T:Exception
+        {
+            private readonly Expression<Func<T, bool>> _expression;
+            private readonly string _description;
+
+            public ExceptionSut(string description = null)
+            {
+                _description = description;
+            }
+
+            public ExceptionSut(Expression<Func<T, bool>> expression, string description=null)
+            {
+                _expression = expression;
+                _description = description;
             }
         }
     }
