@@ -170,7 +170,17 @@ namespace dokimi.examples.sut
                 .Given("A calculator", () => new Calculator())
                 .When(x => x.ThrowUpWithMessage())
                 .ExpectException<InvalidOperationException>(x => x.Message == "This is meant to throw up.");
-            
+
+            return spec;
+        }
+
+        public Specification exception_with_message_just_message()
+        {
+            var spec = Specifications.Catalog.Sut<Calculator, int, FooTestCategory>()
+                .Given("A calculator", () => new Calculator())
+                .When(x => x.ThrowUpWithMessage())
+                .ExpectException<InvalidOperationException>("This is meant to throw up.");
+
             return spec;
         }
 
