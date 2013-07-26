@@ -49,6 +49,9 @@ namespace dokimi.core
             if (exception == null)
                 throw new ExpectationFailedException(this, input);
 
+            if (_expression == null) //expression is null, but exception is of type T. So, pass.
+                return;
+
             if (_expression.Compile()(exception) == false)
                 throw new ExpectationFailedException(this, input);
         }

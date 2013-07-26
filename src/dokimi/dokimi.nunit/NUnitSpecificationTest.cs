@@ -15,6 +15,7 @@ namespace dokimi.nunit
         [Test]
         public void Execute()
         {
+            var inconclusive = false;
             var allSpecTestsPassed = true;
             var testResultBuilder = new StringBuilder();
 
@@ -23,8 +24,21 @@ namespace dokimi.nunit
             
             foreach (var testMethod in specMethods)
             {
+                var thisTestInconclusive = false;
                 var testResult = new SpecInfo();
-                testResult.ReportSpecExecutionHasTriggered();
+
+                var skip = testMethod.GetCustomAttributes().OfType<SkipAttributeContract>()
+                        .FirstOrDefault();
+                
+                if (skip != null)
+                {
+                    testResult.ReportSkipped(skip.Reason);
+                    thisTestInconclusive = true;
+                }
+                else
+                {
+                    testResult.ReportSpecExecutionHasTriggered();
+                }
 
                 try
                 {
@@ -34,7 +48,11 @@ namespace dokimi.nunit
                     var formatter = MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
 
                     testResult.UseFormatter(formatter);
-                    testResult = spec.Run(testResult, formatter);
+
+                    if (skip != null)
+                        spec.EnrichDescription(testResult, formatter);
+                    else
+                        testResult = spec.Run(testResult, formatter);
                 }
                 catch (Exception e)
                 {
@@ -43,9 +61,14 @@ namespace dokimi.nunit
 
                 testResultBuilder.AppendLine(getDescription(testResult));
 
-                if (testResult.Passed == false)
+                if (thisTestInconclusive)
+                    inconclusive = true;
+                else if (testResult.Passed == false)
                     allSpecTestsPassed = false;
             }
+
+            if (inconclusive)
+                Assert.Inconclusive(testResultBuilder.ToString());
 
             if (allSpecTestsPassed)
             {

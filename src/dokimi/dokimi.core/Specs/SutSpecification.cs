@@ -105,12 +105,6 @@ namespace dokimi.core.Specs
                 return _instance;
             }
 
-            public SutSpecification<TSut, TResult> ExpectException<TException>(string description = null) where TException : Exception
-            {
-                _instance._expectations.AddExpectation(new ExceptionExpectation<TException>(description));
-                return _instance;
-            }
-
             public SutSpecification<TSut, TResult> ExpectException<TException>(string description, Expression<Func<TException, bool>> expression) where TException : Exception
             {
                 _instance._expectations.AddExpectation(new ExceptionExpectation<TException>(expression, description));
@@ -120,6 +114,21 @@ namespace dokimi.core.Specs
             public SutSpecification<TSut, TResult> ExpectException<TException>(Expression<Func<TException, bool>> expression) where TException : Exception
             {
                 return ExpectException(null, expression);
+            }
+
+            public SutSpecification<TSut, TResult> ExpectException<TException>(string description, string expectedMessage) where TException : Exception
+            {
+                return ExpectException<TException>(description, x => x.Message == expectedMessage);
+            }
+
+            public SutSpecification<TSut, TResult> ExpectException<TException>(string expectedMessage) where TException : Exception
+            {
+                return ExpectException<TException>(null, expectedMessage);
+            }
+
+            public SutSpecification<TSut, TResult> ExpectException<TException>() where TException : Exception
+            {
+                return ExpectException<TException>(null, expression: null);
             }
         }
 
@@ -159,10 +168,21 @@ namespace dokimi.core.Specs
                 var sut = _given.GetSut(spec);
                 spec.Givens[0].Pass();
 
-                var result = _when.GetResult(sut);
-                spec.When.Pass();
+                try
+                {
+                    var result = _when.GetResult(sut);
+                    spec.When.Pass();
+                    _expectations.Verify(new object[] {result}, spec, formatter);
+                }
+                catch(Exception e)
+                {
+                    //yeah yeah..liskov...fix it if you want.
+                    if (e is ExpectationFailedException)
+                        throw;
 
-                _expectations.Verify(new object[] { result }, spec, formatter);
+                    _expectations.Verify(new object[]{e}, spec, formatter);
+                    spec.When.Pass();
+                }
             }
             catch
             {

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using dokimi.core;
 using dokimi.nunit;
+using NUnit.Framework;
 
 namespace dokimi.examples.sut
 {
@@ -9,6 +12,16 @@ namespace dokimi.examples.sut
         public int Add(int a, int b)
         {
             return a + b;
+        }
+
+        public int ThrowUpWithMessage()
+        {
+            throw new InvalidOperationException("This is meant to throw up.");
+        }
+
+        public int ThrowUp()
+        {
+            throw new InvalidOperationException();
         }
     }
 
@@ -149,5 +162,37 @@ namespace dokimi.examples.sut
         }
     }
 
-    
+    public class SpecWithException : SutTest
+    {
+        public Specification exception_with_message()
+        {
+            var spec = Specifications.Catalog.Sut<Calculator, int, FooTestCategory>()
+                .Given("A calculator", () => new Calculator())
+                .When(x => x.ThrowUpWithMessage())
+                .ExpectException<InvalidOperationException>(x => x.Message == "This is meant to throw up.");
+            
+            return spec;
+        }
+
+        public Specification exception_without_message()
+        {
+            var spec = Specifications.Catalog.Sut<Calculator, int, FooTestCategory>()
+                .Given("A calculator", () => new Calculator())
+                .When(x => x.ThrowUpWithMessage())
+                .ExpectException<InvalidOperationException>();
+            
+            return spec;
+        }
+
+        [Skip("This'll fail...checks for failing on unexpected exception.")]
+        public Specification unexpected_exception_without_message()
+        {
+            var spec = Specifications.Catalog.Sut<Calculator, int, FooTestCategory>()
+                .Given("A calculator", () => new Calculator())
+                .When(x => x.ThrowUpWithMessage())
+                .Then(20);
+
+            return spec;
+        }
+    }
 }
