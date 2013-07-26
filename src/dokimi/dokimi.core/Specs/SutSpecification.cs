@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
 
 namespace dokimi.core.Specs
 {
@@ -8,7 +9,6 @@ namespace dokimi.core.Specs
     {
         private GivenSut _given;
         private WhenSut _when;
-        private ExceptionSut _expectedException;
         
         private readonly Expectations _expectations = new Expectations();
 
@@ -107,13 +107,13 @@ namespace dokimi.core.Specs
 
             public SutSpecification<TSut, TResult> ExpectException<TException>(string description = null) where TException : Exception
             {
-                _instance._expectedException = new ExceptionSut<TException>(description);
+                _instance._expectations.AddExpectation(new ExceptionExpectation<TException>(description));
                 return _instance;
             }
 
             public SutSpecification<TSut, TResult> ExpectException<TException>(string description, Expression<Func<TException, bool>> expression) where TException : Exception
             {
-                _instance._expectedException = new ExceptionSut<TException>(expression, description);
+                _instance._expectations.AddExpectation(new ExceptionExpectation<TException>(expression, description));
                 return _instance;
             }
 
@@ -224,26 +224,36 @@ namespace dokimi.core.Specs
             }
         }
 
-        private interface ExceptionSut
-        {
-            
-        }
+        //private interface ExceptionSut
+        //{
+        //    void DescribeTo(SpecInfo spec, MessageFormatter formatter);
+        //}
 
-        private class ExceptionSut<T> : ExceptionSut where T:Exception
-        {
-            private readonly Expression<Func<T, bool>> _expression;
-            private readonly string _description;
+        //private class ExceptionSut<T> : ExceptionSut where T:Exception
+        //{
+        //    private readonly Expression<Func<T, bool>> _expression;
+        //    private readonly string _description;
 
-            public ExceptionSut(string description = null)
-            {
-                _description = description;
-            }
+        //    public ExceptionSut(string description = null)
+        //    {
+        //        _description = description;
+        //    }
 
-            public ExceptionSut(Expression<Func<T, bool>> expression, string description=null)
-            {
-                _expression = expression;
-                _description = description;
-            }
-        }
+        //    public ExceptionSut(Expression<Func<T, bool>> expression, string description=null)
+        //    {
+        //        _expression = expression;
+        //        _description = description;
+        //    }
+
+        //    public void DescribeTo(SpecInfo spec, MessageFormatter formatter)
+        //    {
+        //        if (string.IsNullOrWhiteSpace(_description) == false)
+        //            spec.ReportExpectation(_description);
+        //        else if (_expression == null)
+        //            spec.ReportExpectation(string.Format("An exception of type {0} is raised.", typeof(T)));
+        //        else
+        //            spec.ReportExpectation(formatter.FormatMessage(_expression));
+        //    }
+        //}
     }
 }

@@ -56,6 +56,7 @@
     <Compile Include="SpecificationCategory.cs" />
     <Compile Include="SpecificationTest.cs" />
     <Compile Include="SpecInfo.cs" />
+    <Compile Include="ExceptionExpectation.cs" />
     <Compile Include="Specs\SpecificationExtensionsForSutSpecifications.cs" />
     <Compile Include="Specs\SutSpecification.cs" />
     <Compile Include="StepInfo.cs" />
