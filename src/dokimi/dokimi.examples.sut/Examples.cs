@@ -142,7 +142,7 @@ namespace dokimi.examples.sut
                              .Given("A calculator", () => new Calculator())
                              .When(x => x.Add(2, 3))
                              .Then(5);
-            
+
             return spec;
         }
     }
@@ -190,7 +190,7 @@ namespace dokimi.examples.sut
                 .Given("A calculator", () => new Calculator())
                 .When(x => x.ThrowUpWithMessage())
                 .ExpectException<InvalidOperationException>();
-            
+
             return spec;
         }
 

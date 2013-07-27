@@ -84,6 +84,8 @@ namespace dokimi.nunit
             if (spec.Passed)
                 return spec.ToString();
 
+            var prefix = spec.Skipped.IsSkipped ? "  ???  " : "  ==>  ";
+            
             var basicString = spec.ToString();
             var lines = basicString.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
@@ -92,7 +94,7 @@ namespace dokimi.nunit
             for (int i = 0; i < lines.Length; i++)
             {
                 if (i != 0 && i != 1 && i != lines.Length - 1)
-                    sb.Append("  ==>  ");
+                    sb.Append(prefix);
 
                 sb.AppendLine(lines[i]);
             }
