@@ -84,7 +84,7 @@ namespace dokimi.examples.sut
             return spec;
         }
 
-        private static int addTwoNumbers(Calculator calc, int num1, int num2)
+        private int addTwoNumbers(Calculator calc, int num1, int num2)
         {
             return calc.Add(num1, num2);
         }

@@ -61,9 +61,7 @@ namespace dokimi.core
             if (typeof (T).IsValueType)
                 return string.Empty;
 
-            var name = typeof(T).Name.Replace("Event", string.Empty)
-                .Replace("Command", string.Empty);
-            
+            var name = typeof (T).Name;
 
             return name.ToWords();
         }
