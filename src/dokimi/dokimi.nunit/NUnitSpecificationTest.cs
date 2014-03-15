@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,71 +13,73 @@ namespace dokimi.nunit
     {
         public Func<Specification, Specification> TransformForEnvironment = x => x;
 
-        [Test]
-        public void Execute()
-        {
-            var inconclusive = false;
-            var allSpecTestsPassed = true;
-            var testResultBuilder = new StringBuilder();
 
+        protected IEnumerable SpecificationFinder()
+        {
             var specMethods =
                 GetType().GetMethods().Where(x => typeof(Specification).IsAssignableFrom(x.ReturnType));
-            
-            foreach (var testMethod in specMethods)
-            {
-                var thisTestInconclusive = false;
-                var testResult = new SpecInfo();
 
-                var skip = testMethod.GetCustomAttributes().OfType<SkipAttributeContract>()
-                        .FirstOrDefault();
-                
+            foreach (var specMethod in specMethods)
+            {
+                var testCase = new TestCaseData(specMethod);
+                testCase.SetName(getSpecName(specMethod.DeclaringType, specMethod));
+
+                yield return testCase;
+            }
+        }
+
+        [Test, TestCaseSource("SpecificationFinder")]
+        public void Specification(MethodInfo testMethod)
+        {
+            var inconclusive = false;
+            var testResult = new SpecInfo();
+
+            var skip = testMethod.GetCustomAttributes().OfType<SkipAttributeContract>()
+                    .FirstOrDefault();
+
+            if (skip != null)
+            {
+                testResult.ReportSkipped(skip.Reason);
+                inconclusive = true;
+            }
+            else
+            {
+                testResult.ReportSpecExecutionHasTriggered();
+            }
+
+            try
+            {
+                testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
+
+                var spec = testMethod.Invoke(this, new object[0]) as Specification;
+                var formatter = MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
+
+                testResult.UseFormatter(formatter);
+
                 if (skip != null)
-                {
-                    testResult.ReportSkipped(skip.Reason);
-                    thisTestInconclusive = true;
-                }
+                    spec.EnrichDescription(testResult, formatter);
                 else
-                {
-                    testResult.ReportSpecExecutionHasTriggered();
-                }
-
-                try
-                {
-                    testResult.Name = getSpecName(testMethod.DeclaringType, testMethod);
-
-                    var spec = testMethod.Invoke(this, new object[0]) as Specification;
-                    var formatter = MessageFormatterRegistry.GetFormatter(spec.SpecificationCategory);
-
-                    testResult.UseFormatter(formatter);
-
-                    if (skip != null)
-                        spec.EnrichDescription(testResult, formatter);
-                    else
-                        testResult = spec.Run(testResult, formatter);
-                }
-                catch (Exception e)
-                {
-                    testResult.Exception = e;
-                }
-
-                testResultBuilder.AppendLine(getDescription(testResult));
-
-                if (thisTestInconclusive)
-                    inconclusive = true;
-                else if (testResult.Passed == false)
-                    allSpecTestsPassed = false;
+                    testResult = spec.Run(testResult, formatter);
             }
-
-            if (inconclusive)
-                Assert.Inconclusive(testResultBuilder.ToString());
-
-            if (allSpecTestsPassed)
+            catch (Exception e)
             {
-                Console.WriteLine(testResultBuilder);
-                return;
+                testResult.Exception = e;
             }
 
-            Assert.Fail(testResultBuilder.ToString());
+            var sb = new StringBuilder();
+            sb.AppendLine(getDescription(testResult));
+
+            var description = sb.ToString();
+
+            Console.WriteLine(description);
+
+            if(inconclusive)
+                Assert.Inconclusive(testResult.Skipped.Reason);
+            else
+                if(!testResult.Passed)
+                    Assert.Fail(description);
+                else
+                    Assert.Pass(description);
         }
 
         private string getDescription(SpecInfo spec)
