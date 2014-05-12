@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>dokimi.core</id>
+    <version>0.0.0.0</version> 
+    <title>dokimi.core</title>
+    <authors>Ashic, Kamil</authors>
+    <owners>Ashic, Kamil</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>core dokimi</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>Specifications, Testing, dokimi, NUnit</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="src\dokimi\dokimi\bin\$configuration$\*.*" target=".\dokimi\" />
+  </files>
+</package>
