@@ -5,8 +5,6 @@ properties {
     $CodeDir = "$RootDir\src"
     $ToolsDir = "$RootDir\tools"
     $Config = "Debug"
-#    $NUnitTestAssemblies = ("$CodeDir\Twang\UnitTests\bin\$Config\UnitTests.dll")
-#    $NUnit = "$ToolsDir\NUnit-2.6.2\bin\nunit-console.exe"
 }
 
 
