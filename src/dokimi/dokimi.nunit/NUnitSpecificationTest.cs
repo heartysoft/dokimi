@@ -70,16 +70,16 @@ namespace dokimi.nunit
             sb.AppendLine(getDescription(testResult));
 
             var description = sb.ToString();
-
-            Console.WriteLine(description);
-
+            
             if(inconclusive)
                 Assert.Inconclusive(testResult.Skipped.Reason);
+            else if (!testResult.Passed)
+                Assert.Fail(description);
             else
-                if(!testResult.Passed)
-                    Assert.Fail(description);
-                else
-                    Assert.Pass(description);
+            {
+                Console.WriteLine(description);
+                Assert.Pass(description);
+            }
         }
 
         private string getDescription(SpecInfo spec)
