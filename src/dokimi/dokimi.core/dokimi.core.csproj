@@ -57,8 +57,13 @@
     <Compile Include="SpecificationTest.cs" />
     <Compile Include="SpecInfo.cs" />
     <Compile Include="ExceptionExpectation.cs" />
-    <Compile Include="Specs\SpecificationExtensionsForSutSpecifications.cs" />
-    <Compile Include="Specs\SutSpecification.cs" />
+    <Compile Include="Specs\MessageBased\MessageBasedSpecification.cs" />
+    <Compile Include="Specs\MessageBased\MessageBasedSpecification.Fluent.cs" />
+    <Compile Include="Specs\MessageBased\MessageCountExpectation.cs" />
+    <Compile Include="Specs\MessageBased\Router.cs" />
+    <Compile Include="Specs\MessageBased\SpecificationExtensionsForMessageBasedSpecifications.cs" />
+    <Compile Include="Specs\Sut\SpecificationExtensionsForSutSpecifications.cs" />
+    <Compile Include="Specs\Sut\SutSpecification.cs" />
     <Compile Include="StepInfo.cs" />
     <Compile Include="StringExtensions.cs" />
   </ItemGroup>
