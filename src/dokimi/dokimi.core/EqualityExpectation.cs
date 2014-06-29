@@ -1,4 +1,5 @@
 using System.Linq;
+using KellermanSoftware.CompareNetObjects;
 
 namespace dokimi.core
 {
@@ -6,6 +7,7 @@ namespace dokimi.core
     {
         private readonly object _expected;
         private readonly string _description;
+        readonly CompareLogic _comparer = new CompareLogic();
 
         public EqualityExpectation(object expected)
             :this(expected, null)
@@ -25,7 +27,7 @@ namespace dokimi.core
 
         public void VerifyTo(object[] input, SpecInfo results, MessageFormatter formatter)
         {
-            if (input.Any(x => x.Equals(_expected)))
+            if (input.Any(x => _comparer.Compare(x, _expected).AreEqual))
             {
                 results.ReportExpectationPass(this);
                 return;
