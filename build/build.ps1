@@ -104,6 +104,6 @@ task build-dokimi-nunit -depends compile {
 
 task publish-dokimi-nunit -depends build-dokimi-nunit {
 	$pkgPath = Get-ChildItem -Path "$dokimi_dir\dokimi.nunit" -Filter "*.nupkg" | select-object -first 1
-	#exec { & "$dokimi_dir\.nuget\nuget.exe" push "$dokimi_dir\dokimi.nunit\$pkgPath" }
-	#ri "$dokimi_dir\dokimi.nunit\$pkgPath"
+	exec { & "$dokimi_dir\.nuget\nuget.exe" push "$dokimi_dir\dokimi.nunit\$pkgPath" }
+	ri "$dokimi_dir\dokimi.nunit\$pkgPath"
 }
