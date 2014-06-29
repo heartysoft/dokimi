@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+<?xml version="1.0"?>
+<package >
   <metadata>
     <id>dokimi.nunit</id>
-    <version>0.0.0.0</version> 
+    <version>$version$</version>
     <title>dokimi.nunit</title>
-    <authors>Ashic, Kamil</authors>
-    <owners>Ashic, Kamil</owners>
+    <authors>ashic</authors>
+    <owners>ashic</owners>
+    <licenseUrl>https://github.com/heartysoft/dokimi/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/heartysoft/dokimi</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>NUnit support for dokimi</description>
-    <releaseNotes>Initial release.</releaseNotes>
-    <copyright>Copyright 2013</copyright>
-    <tags>Specifications, Testing, dokimi, NUnit</tags>
-    <dependencies>
-      <dependency id="dokimi.core" />
-    </dependencies>
+    <description>$description$</description>
+    <copyright>Copyright 2014 Heartysoft Solutions Limited</copyright>
+    <tags>dokimi unit-testing bdd event-sourcing message-driven-testing specs</tags>
   </metadata>
 </package>
